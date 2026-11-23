@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Data Analytics - Cover Page</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 595px;
+      height: 842px;
+      overflow: hidden;
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .cover-container {
+      width: 595px;
+      height: 842px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f0225 0%, #1a0533 15%, #0d1f3c 30%, #0a2d4a 50%, #063d4f 70%, #0a4a40 85%, #0d3d2e 100%);
+    }
+
+    /* Animated hex grid background */
+    .hex-grid {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0.08;
+      background-image:
+        linear-gradient(30deg, #7c3aed 12%, transparent 12.5%, transparent 87%, #7c3aed 87.5%, #7c3aed),
+        linear-gradient(150deg, #7c3aed 12%, transparent 12.5%, transparent 87%, #7c3aed 87.5%, #7c3aed),
+        linear-gradient(30deg, #7c3aed 12%, transparent 12.5%, transparent 87%, #7c3aed 87.5%, #7c3aed),
+        linear-gradient(150deg, #7c3aed 12%, transparent 12.5%, transparent 87%, #7c3aed 87.5%, #7c3aed),
+        linear-gradient(60deg, #06b6d477 25%, transparent 25.5%, transparent 75%, #06b6d477 75%, #06b6d477),
+        linear-gradient(60deg, #06b6d477 25%, transparent 25.5%, transparent 75%, #06b6d477 75%, #06b6d477);
+      background-size: 40px 70px;
+      background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
+    }
+
+    /* Spiral binding */
+    .spiral-binding {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 32px;
+      height: 100%;
+      background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      padding: 15px 0;
+      box-shadow: 3px 0 15px rgba(0,0,0,0.5);
+    }
+
+    .spiral-ring {
+      width: 22px;
+      height: 22px;
+      border: 2.5px solid #c0c0c0;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #e8e8e8, #a0a0a0);
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.3);
+    }
+
+    /* Floating particles */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: float-particle linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes float-particle {
+      0% { transform: translateY(842px) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-50px) scale(1); opacity: 0; }
+    }
+
+    /* Glowing orbs */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: pulse-orb 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-orb {
+      0% { opacity: 0.3; transform: scale(1); }
+      100% { opacity: 0.6; transform: scale(1.2); }
+    }
+
+    /* Network lines */
+    .network-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    /* Top banner */
+    .top-banner {
+      position: absolute;
+      top: 20px;
+      left: 50px;
+      right: 15px;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .top-banner span {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #a78bfa;
+      text-shadow: 0 0 20px rgba(167,139,250,0.5);
+    }
+
+    /* Main title area */
+    .title-area {
+      position: absolute;
+      top: 160px;
+      left: 50px;
+      right: 15px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .title-deco-line {
+      width: 180px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #06b6d4, #a78bfa, transparent);
+      margin: 0 auto 15px;
+      box-shadow: 0 0 10px rgba(6,182,212,0.5);
+    }
+
+    .subject-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: #67e8f9;
+      margin-bottom: 8px;
+    }
+
+    .main-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 5px;
+      background: linear-gradient(180deg, #ffffff 0%, #e0e7ff 30%, #a78bfa 70%, #7c3aed 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 10px rgba(167,139,250,0.4));
+    }
+
+    .main-title-line2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 50px;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(180deg, #06b6d4 0%, #0891b2 40%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 15px rgba(6,182,212,0.5));
+    }
+
+    .bar-chart-icon {
+      display: inline-block;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .bar-chart-icon span {
+      display: inline-block;
+      width: 6px;
+      margin: 0 1.5px;
+      border-radius: 2px 2px 0 0;
+      vertical-align: bottom;
+    }
+
+    .tagline {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      color: #94a3b8;
+      margin-top: 18px;
+    }
+
+    .tagline em {
+      font-style: italic;
+      color: #fbbf24;
+      text-shadow: 0 0 15px rgba(251,191,36,0.4);
+    }
+
+    /* Data visualization icons area */
+    .data-viz-area {
+      position: absolute;
+      top: 55px;
+      left: 50px;
+      right: 15px;
+      height: 110px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+      z-index: 10;
+    }
+
+    .viz-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      animation: icon-float 3s ease-in-out infinite;
+    }
+
+    .viz-icon:nth-child(2) { animation-delay: 0.5s; }
+    .viz-icon:nth-child(3) { animation-delay: 1s; }
+    .viz-icon:nth-child(4) { animation-delay: 1.5s; }
+    .viz-icon:nth-child(5) { animation-delay: 2s; }
+
+    @keyframes icon-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .viz-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    /* Glass card for student info */
+    .info-card {
+      position: absolute;
+      bottom: 130px;
+      right: 25px;
+      width: 260px;
+      padding: 22px 20px;
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 18px;
+      z-index: 10;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #a78bfa, #06b6d4, transparent);
+      border-radius: 2px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .info-row:last-child { margin-bottom: 0; }
+
+    .info-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(6,182,212,0.3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .info-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: #e0e7ff;
+    }
+
+    .info-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      line-height: 1;
+    }
+
+    .info-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #f1f5f9;
+      line-height: 1.2;
+    }
+
+    /* Books stack */
+    .books-stack {
+      position: absolute;
+      bottom: 120px;
+      left: 48px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .book {
+      padding: 7px 16px;
+      border-radius: 3px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .book:nth-child(1) { background: linear-gradient(90deg, #7c3aed, #6d28d9); width: 130px; }
+    .book:nth-child(2) { background: linear-gradient(90deg, #0891b2, #0e7490); width: 140px; }
+    .book:nth-child(3) { background: linear-gradient(90deg, #d97706, #b45309); width: 155px; }
+    .book:nth-child(4) { background: linear-gradient(90deg, #059669, #047857); width: 145px; }
+
+    /* Bottom section */
+    .bottom-section {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      z-index: 10;
+    }
+
+    .bottom-gradient {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: linear-gradient(0deg, rgba(10,2,25,0.9) 0%, transparent 100%);
+    }
+
+    .bottom-tagline {
+      position: absolute;
+      bottom: 22px;
+      left: 50px;
+      right: 15px;
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 2px;
+    }
+
+    .bottom-tagline .highlight {
+      color: #fbbf24;
+      font-weight: 700;
+      font-style: italic;
+      text-shadow: 0 0 15px rgba(251,191,36,0.4);
+    }
+
+    .bottom-tagline .normal {
+      color: #94a3b8;
+    }
+
+    /* Corner accents */
+    .corner-accent {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      z-index: 5;
+    }
+
+    .corner-accent.top-right {
+      top: 15px;
+      right: 15px;
+      border-top: 2px solid rgba(6,182,212,0.4);
+      border-right: 2px solid rgba(6,182,212,0.4);
+      border-radius: 0 12px 0 0;
+    }
+
+    .corner-accent.bottom-left {
+      bottom: 15px;
+      left: 42px;
+      border-bottom: 2px solid rgba(167,139,250,0.4);
+      border-left: 2px solid rgba(167,139,250,0.4);
+      border-radius: 0 0 0 12px;
+    }
+
+    /* AI Brain center decoration */
+    .center-deco {
+      position: absolute;
+      top: 400px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 8;
+    }
+
+    .brain-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid rgba(167,139,250,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+      animation: brain-pulse 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    .brain-circle::before {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 1px solid rgba(6,182,212,0.15);
+      animation: brain-ring 4s ease-in-out infinite;
+    }
+
+    .brain-circle::after {
+      content: '';
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 1px dashed rgba(167,139,250,0.1);
+      animation: brain-ring 6s ease-in-out infinite reverse;
+    }
+
+    @keyframes brain-pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(124,58,237,0.2); }
+      50% { box-shadow: 0 0 40px rgba(124,58,237,0.4), 0 0 80px rgba(6,182,212,0.2); }
+    }
+
+    @keyframes brain-ring {
+      0%, 100% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .brain-circle svg {
+      width: 44px;
+      height: 44px;
+      fill: url(#brain-grad);
+      filter: drop-shadow(0 0 10px rgba(167,139,250,0.5));
+    }
+
+    /* Data flow lines */
+    .data-flow {
+      position: absolute;
+      z-index: 3;
+    }
+
+    .flow-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+      opacity: 0.3;
+      animation: flow-move 3s linear infinite;
+    }
+
+    @keyframes flow-move {
+      0% { opacity: 0; transform: translateX(-100%); }
+      50% { opacity: 0.4; }
+      100% { opacity: 0; transform: translateX(100%); }
+    }
+
+    /* Session info */
+    .session-info {
+      position: absolute;
+      bottom: 55px;
+      left: 50px;
+      right: 15px;
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(148,163,184,0.5);
+      letter-spacing: 3px;
+      z-index: 10;
+    }
+
+    /* Scan lines effect */
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    /* Download button */
+    .download-btn-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 50;
+    }
+
+    .download-btn {
+      padding: 8px 18px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+      transition: all 0.3s;
+      display: none;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124,58,237,0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="cover-container" id="coverPage">
+    <!-- Hex grid background -->
+    <div class="hex-grid"></div>
+
+    <!-- Scanlines overlay -->
+    <div class="scanlines"></div>
+
+    <!-- SVG Definitions -->
+    <svg style="position:absolute;width:0;height:0;">
+      <defs>
+        <linearGradient id="brain-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#a78bfa" />
+          <stop offset="100%" style="stop-color:#06b6d4" />
+        </linearGradient>
+        <linearGradient id="icon-grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#c084fc" />
+          <stop offset="100%" style="stop-color:#a78bfa" />
+        </linearGradient>
+        <linearGradient id="icon-grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#22d3ee" />
+          <stop offset="100%" style="stop-color:#06b6d4" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <!-- Spiral binding -->
+    <div class="spiral-binding">
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+      <div class="spiral-ring"></div>
+    </div>
+
+    <!-- Glowing orbs -->
+    <div class="glow-orb" style="top:100px;left:100px;width:200px;height:200px;background:rgba(124,58,237,0.15);"></div>
+    <div class="glow-orb" style="top:400px;right:50px;width:250px;height:250px;background:rgba(6,182,212,0.12);animation-delay:2s;"></div>
+    <div class="glow-orb" style="bottom:150px;left:150px;width:180px;height:180px;background:rgba(251,191,36,0.08);animation-delay:1s;"></div>
+
+    <!-- Network canvas -->
+    <canvas class="network-canvas" id="networkCanvas"></canvas>
+
+    <!-- Corner accents -->
+    <div class="corner-accent top-right"></div>
+    <div class="corner-accent bottom-left"></div>
+
+    <!-- Top banner -->
+    <div class="top-banner">
+      <span>Explore &nbsp;•&nbsp; Discover &nbsp;•&nbsp; Innovate</span>
+    </div>
+
+    <!-- Data viz icons -->
+    <div class="data-viz-area">
+      <div class="viz-icon" style="background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(124,58,237,0.05));border:1px solid rgba(167,139,250,0.2);border-radius:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5">
+          <path d="M4 6h16M4 10h16M4 14h10M4 18h6"/>
+          <circle cx="20" cy="16" r="3" fill="rgba(167,139,250,0.3)"/>
+        </svg>
+      </div>
+      <div class="viz-icon" style="background:linear-gradient(135deg,rgba(6,182,212,0.2),rgba(6,182,212,0.05));border:1px solid rgba(34,211,238,0.2);border-radius:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.5">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+          <path d="M12 2c-2.76 0-5 4.48-5 10s2.24 10 5 10 5-4.48 5-10-2.24-10-5-10z"/>
+          <path d="M2 12h20"/>
+        </svg>
+      </div>
+      <div class="viz-icon" style="background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(251,191,36,0.05));border:1px solid rgba(251,191,36,0.2);border-radius:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.5">
+          <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path d="M12 3v9l6 3"/>
+        </svg>
+      </div>
+      <div class="viz-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(16,185,129,0.05));border:1px solid rgba(16,185,129,0.2);border-radius:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.5">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+      </div>
+      <div class="viz-icon" style="background:linear-gradient(135deg,rgba(244,114,182,0.2),rgba(244,114,182,0.05));border:1px solid rgba(244,114,182,0.2);border-radius:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="1.5">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Main Title -->
+    <div class="title-area">
+      <div class="title-deco-line"></div>
+      <div class="subject-label">— SUBJECT —</div>
+      <div class="main-title">BIG DATA</div>
+      <div class="main-title-line2">
+        Analytics
+        <span class="bar-chart-icon">
+          <span style="height:14px;background:linear-gradient(180deg,#22d3ee,#06b6d4);"></span>
+          <span style="height:22px;background:linear-gradient(180deg,#a78bfa,#7c3aed);"></span>
+          <span style="height:18px;background:linear-gradient(180deg,#fbbf24,#d97706);"></span>
+          <span style="height:28px;background:linear-gradient(180deg,#34d399,#059669);"></span>
+        </span>
+      </div>
+      <div class="title-deco-line" style="margin-top:15px;"></div>
+      <div class="tagline"><em>Analyze</em> &nbsp;•&nbsp; <em>Predict</em> &nbsp;•&nbsp; <em>Transform</em></div>
+    </div>
+
+    <!-- AI Brain center deco -->
+    <div class="center-deco">
+      <div class="brain-circle">
+        <svg viewBox="0 0 24 24" fill="url(#brain-grad)">
+          <path d="M12 2a1 1 0 011 1v2.07A8.001 8.001 0 0119.93 11H22a1 1 0 110 2h-2.07A8.001 8.001 0 0113 19.93V22a1 1 0 11-2 0v-2.07A8.001 8.001 0 014.07 13H2a1 1 0 110-2h2.07A8.001 8.001 0 0111 5.07V3a1 1 0 011-1zm0 5a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Student Info Card -->
+    <div class="info-card">
+      <div class="info-row">
+        <div class="info-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <div>
+          <div class="info-label">Name</div>
+          <div class="info-value">AMIT KUMAR</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">
+          <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+        </div>
+        <div>
+          <div class="info-label">Course</div>
+          <div class="info-value">AI & Machine Learning</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+        </div>
+        <div>
+          <div class="info-label">Semester</div>
+          <div class="info-value" style="font-size:20px;color:#fbbf24;">5TH</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+        </div>
+        <div>
+          <div class="info-label">Roll No.</div>
+          <div class="info-value" style="font-size:20px;color:#22d3ee;">49</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Books stack -->
+    <div class="books-stack">
+      <div class="book">Big Data</div>
+      <div class="book">Data Science</div>
+      <div class="book">Machine Learning</div>
+      <div class="book">Data Analytics</div>
+    </div>
+
+    <!-- Bottom section -->
+    <div class="bottom-section">
+      <div class="bottom-gradient"></div>
+      <div class="session-info">SESSION 2026-27 &nbsp;•&nbsp; GOVERNMENT POLYTECHNIC BARH</div>
+      <div class="bottom-tagline">
+        <span class="normal">From Raw Data to </span>
+        <span class="highlight">Real Insights...</span>
+      </div>
+    </div>
+
+    <!-- Floating particles -->
+    <div id="particles"></div>
+  </div>
+
+  <script>
+    // Create floating particles
+    const particlesContainer = document.getElementById('particles');
+    const colors = ['#a78bfa', '#06b6d4', '#fbbf24', '#34d399', '#f472b6', '#818cf8'];
+
+    for (let i = 0; i < 35; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      const size = Math.random() * 4 + 2;
+      const left = Math.random() * 560 + 35;
+      const duration = Math.random() * 8 + 6;
+      const delay = Math.random() * 10;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      particle.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${left}px;
+        background: ${color};
+        box-shadow: 0 0 ${size * 2}px ${color};
+        animation-duration: ${duration}s;
+        animation-delay: ${delay}s;
+      `;
+      particlesContainer.appendChild(particle);
+    }
+
+    // Draw network lines on canvas
+    const canvas = document.getElementById('networkCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 595;
+    canvas.height = 842;
+
+    const nodes = [];
+    for (let i = 0; i < 20; i++) {
+      nodes.push({
+        x: Math.random() * 560 + 35,
+        y: Math.random() * 842,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        radius: Math.random() * 2 + 1
+      });
+    }
+
+    function drawNetwork() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update node positions
+      nodes.forEach(node => {
+        node.x += node.vx;
+        node.y += node.vy;
+        if (node.x < 35 || node.x > 595) node.vx *= -1;
+        if (node.y < 0 || node.y > 842) node.vy *= -1;
+      });
+
+      // Draw connections
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+          if (dist < 150) {
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            const alpha = (1 - dist / 150) * 0.15;
+            ctx.strokeStyle = `rgba(167, 139, 250, ${alpha})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw nodes
+      nodes.forEach(node => {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius + 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.1)';
+        ctx.fill();
+      });
+
+      requestAnimationFrame(drawNetwork);
+    }
+
+    drawNetwork();
+  </script>
+</body>
+</html>

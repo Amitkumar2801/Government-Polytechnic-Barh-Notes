@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Deep Learning - Cover Page</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 595px; height: 842px; overflow: hidden; font-family: 'Space Grotesk', sans-serif; }
+
+    .cover { width: 595px; height: 842px; position: relative; overflow: hidden;
+      background: linear-gradient(140deg, #0a0015 0%, #150028 15%, #1a003d 30%, #12002e 45%, #0d0033 60%, #08001a 80%, #050010 100%);
+    }
+
+    .neural-grid { position: absolute; width: 100%; height: 100%; opacity: 0.05;
+      background-image: radial-gradient(circle, rgba(139,92,246,0.3) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .spiral-binding { position: absolute; left: 0; top: 0; width: 32px; height: 100%;
+      background: linear-gradient(90deg, #0a0015 0%, #150028 50%, #1a003d 100%);
+      z-index: 20; display: flex; flex-direction: column; align-items: center;
+      justify-content: space-around; padding: 15px 0; box-shadow: 3px 0 15px rgba(0,0,0,0.5);
+    }
+    .ring { width: 22px; height: 22px; border: 2.5px solid #c0c0c0; border-radius: 50%;
+      background: linear-gradient(145deg, #e8e8e8, #a0a0a0);
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.3);
+    }
+
+    .glow-orb { position: absolute; border-radius: 50%; filter: blur(60px);
+      animation: pulse 4s ease-in-out infinite alternate;
+    }
+    @keyframes pulse { 0% { opacity: 0.3; transform: scale(1); } 100% { opacity: 0.6; transform: scale(1.2); } }
+
+    .particle { position: absolute; border-radius: 50%; animation: fp linear infinite; opacity: 0; }
+    @keyframes fp { 0% { transform: translateY(842px) scale(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-50px) scale(1); opacity: 0; } }
+
+    canvas.net { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+
+    .top-banner { position: absolute; top: 20px; left: 50px; right: 15px; text-align: center; z-index: 10; }
+    .top-banner span { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
+      letter-spacing: 6px; text-transform: uppercase; color: #c084fc;
+      text-shadow: 0 0 20px rgba(192,132,252,0.5);
+    }
+
+    .viz-area { position: absolute; top: 55px; left: 50px; right: 15px; height: 110px;
+      display: flex; justify-content: center; align-items: center; gap: 22px; z-index: 10;
+    }
+    .viz-icon { width: 68px; height: 68px; border-radius: 16px; display: flex;
+      align-items: center; justify-content: center; animation: icf 3s ease-in-out infinite;
+    }
+    .viz-icon:nth-child(2){animation-delay:.5s;}.viz-icon:nth-child(3){animation-delay:1s;}
+    .viz-icon:nth-child(4){animation-delay:1.5s;}.viz-icon:nth-child(5){animation-delay:2s;}
+    @keyframes icf { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .viz-icon svg { width: 34px; height: 34px; }
+
+    .title-area { position: absolute; top: 175px; left: 50px; right: 15px; text-align: center; z-index: 10; }
+    .deco-line { width: 180px; height: 2px;
+      background: linear-gradient(90deg, transparent, #8b5cf6, #ec4899, transparent);
+      margin: 0 auto 15px; box-shadow: 0 0 10px rgba(139,92,246,0.5);
+    }
+    .sub-label { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 500;
+      letter-spacing: 8px; text-transform: uppercase; color: #c4b5fd; margin-bottom: 8px;
+    }
+    .main-t1 { font-family: 'Orbitron', sans-serif; font-size: 52px; font-weight: 900; line-height: 1.1; margin-bottom: 5px;
+      background: linear-gradient(180deg, #fff 0%, #e0e7ff 25%, #c084fc 60%, #8b5cf6 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 12px rgba(139,92,246,0.5));
+    }
+    .main-t2 { font-family: 'Orbitron', sans-serif; font-size: 54px; font-weight: 900; line-height: 1.1;
+      background: linear-gradient(180deg, #f472b6 0%, #ec4899 40%, #db2777 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 15px rgba(236,72,153,0.5));
+    }
+    .tagline { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 500;
+      letter-spacing: 3px; color: #94a3b8; margin-top: 18px;
+    }
+    .tagline em { font-style: italic; color: #f472b6; text-shadow: 0 0 15px rgba(244,114,182,0.4); }
+
+    /* Neural network visualization */
+    .nn-area { position: absolute; top: 390px; left: 50%; transform: translateX(-50%); z-index: 8; }
+    .nn-layer { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .nn-container { display: flex; align-items: center; gap: 30px; }
+    .neuron { width: 18px; height: 18px; border-radius: 50%; border: 2px solid;
+      animation: neuron-pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 10px currentColor;
+    }
+    .neuron:nth-child(odd) { animation-delay: 0.5s; }
+    @keyframes neuron-pulse { 0%,100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+    .nn-label { font-family: 'Rajdhani', sans-serif; font-size: 9px; color: #64748b; letter-spacing: 1px; text-align: center; margin-top: 4px; }
+
+    .info-card { position: absolute; bottom: 130px; right: 25px; width: 260px; padding: 22px 20px;
+      background: rgba(255,255,255,0.07); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; z-index: 10;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .info-card::before { content: ''; position: absolute; top: -1px; left: 20px; right: 20px; height: 2px;
+      background: linear-gradient(90deg, transparent, #8b5cf6, #ec4899, transparent); border-radius: 2px;
+    }
+    .info-row { display: flex; align-items: center; margin-bottom: 12px; gap: 10px; }
+    .info-row:last-child { margin-bottom: 0; }
+    .info-icon { width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(236,72,153,0.3));
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .info-icon svg { width: 16px; height: 16px; fill: #e0e7ff; }
+    .info-label { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 500;
+      color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; line-height: 1;
+    }
+    .info-value { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700;
+      color: #f1f5f9; line-height: 1.2;
+    }
+
+    .books-stack { position: absolute; bottom: 120px; left: 48px; z-index: 10;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .book { padding: 7px 16px; border-radius: 3px; font-family: 'Rajdhani', sans-serif;
+      font-size: 12px; font-weight: 600; color: #fff;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.4); letter-spacing: 0.5px;
+    }
+
+    .bottom-section { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; z-index: 10; }
+    .bottom-grad { position: absolute; bottom: 0; left: 0; right: 0; height: 100px;
+      background: linear-gradient(0deg, rgba(10,0,21,0.9) 0%, transparent 100%);
+    }
+    .session-info { position: absolute; bottom: 55px; left: 50px; right: 15px; text-align: center;
+      font-family: 'Rajdhani', sans-serif; font-size: 11px; color: rgba(148,163,184,0.5); letter-spacing: 3px; z-index: 10;
+    }
+    .bottom-tag { position: absolute; bottom: 22px; left: 50px; right: 15px; text-align: center;
+      font-family: 'Rajdhani', sans-serif; font-size: 16px; letter-spacing: 2px;
+    }
+    .bottom-tag .hl { color: #f472b6; font-weight: 700; font-style: italic; text-shadow: 0 0 15px rgba(244,114,182,0.4); }
+    .bottom-tag .nm { color: #94a3b8; }
+
+    .corner-accent { position: absolute; width: 60px; height: 60px; z-index: 5; }
+    .corner-accent.tr { top: 15px; right: 15px; border-top: 2px solid rgba(139,92,246,0.4); border-right: 2px solid rgba(139,92,246,0.4); border-radius: 0 12px 0 0; }
+    .corner-accent.bl { bottom: 15px; left: 42px; border-bottom: 2px solid rgba(236,72,153,0.4); border-left: 2px solid rgba(236,72,153,0.4); border-radius: 0 0 0 12px; }
+
+    .scanlines { position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      z-index: 15; pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div class="cover">
+  <div class="neural-grid"></div>
+  <div class="scanlines"></div>
+
+  <div class="spiral-binding">
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+  </div>
+
+  <div class="glow-orb" style="top:100px;left:100px;width:200px;height:200px;background:rgba(139,92,246,0.18);"></div>
+  <div class="glow-orb" style="top:350px;right:50px;width:250px;height:250px;background:rgba(236,72,153,0.14);animation-delay:2s;"></div>
+  <div class="glow-orb" style="bottom:200px;left:180px;width:180px;height:180px;background:rgba(59,130,246,0.1);animation-delay:1s;"></div>
+
+  <canvas class="net" id="netCanvas"></canvas>
+  <div class="corner-accent tr"></div>
+  <div class="corner-accent bl"></div>
+
+  <div class="top-banner"><span>Think &nbsp;•&nbsp; Learn &nbsp;•&nbsp; Evolve</span></div>
+
+  <div class="viz-area">
+    <div class="viz-icon" style="background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(139,92,246,0.05));border:1px solid rgba(167,139,250,0.25);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5"><path d="M12 2a7 7 0 017 7c0 2.5-1.5 4.5-3 6-1 1-1.5 2.5-1.5 4h-5c0-1.5-.5-3-1.5-4-1.5-1.5-3-3.5-3-6a7 7 0 017-7z"/><path d="M9 21h6M10 19h4"/></svg>
+    </div>
+    <div class="viz-icon" style="background:linear-gradient(135deg,rgba(236,72,153,0.2),rgba(236,72,153,0.05));border:1px solid rgba(244,114,182,0.25);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+    </div>
+    <div class="viz-icon" style="background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(59,130,246,0.05));border:1px solid rgba(96,165,250,0.25);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5"><path d="M4 14l4-4 4 4 8-8"/><path d="M16 6h4v4"/></svg>
+    </div>
+    <div class="viz-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(16,185,129,0.05));border:1px solid rgba(52,211,153,0.25);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.5"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M17 14v7M14 17h7"/></svg>
+    </div>
+    <div class="viz-icon" style="background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(251,191,36,0.05));border:1px solid rgba(251,191,36,0.25);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4"/></svg>
+    </div>
+  </div>
+
+  <div class="title-area">
+    <div class="deco-line"></div>
+    <div class="sub-label">— SUBJECT —</div>
+    <div class="main-t1">DEEP</div>
+    <div class="main-t2">Learning</div>
+    <div class="deco-line" style="margin-top:15px;"></div>
+    <div class="tagline"><em>Learn</em> &nbsp;•&nbsp; <em>Adapt</em> &nbsp;•&nbsp; <em>Evolve</em></div>
+  </div>
+
+  <!-- Neural network visualization -->
+  <div class="nn-area">
+    <div class="nn-container">
+      <div class="nn-layer">
+        <div class="neuron" style="border-color:#8b5cf6;color:#8b5cf6;"></div>
+        <div class="neuron" style="border-color:#8b5cf6;color:#8b5cf6;"></div>
+        <div class="neuron" style="border-color:#8b5cf6;color:#8b5cf6;"></div>
+        <div class="nn-label">INPUT</div>
+      </div>
+      <div class="nn-layer">
+        <div class="neuron" style="border-color:#a78bfa;color:#a78bfa;"></div>
+        <div class="neuron" style="border-color:#a78bfa;color:#a78bfa;"></div>
+        <div class="neuron" style="border-color:#a78bfa;color:#a78bfa;"></div>
+        <div class="neuron" style="border-color:#a78bfa;color:#a78bfa;"></div>
+        <div class="nn-label">HIDDEN 1</div>
+      </div>
+      <div class="nn-layer">
+        <div class="neuron" style="border-color:#c084fc;color:#c084fc;"></div>
+        <div class="neuron" style="border-color:#c084fc;color:#c084fc;"></div>
+        <div class="neuron" style="border-color:#c084fc;color:#c084fc;"></div>
+        <div class="neuron" style="border-color:#c084fc;color:#c084fc;"></div>
+        <div class="neuron" style="border-color:#c084fc;color:#c084fc;"></div>
+        <div class="nn-label">HIDDEN 2</div>
+      </div>
+      <div class="nn-layer">
+        <div class="neuron" style="border-color:#f472b6;color:#f472b6;"></div>
+        <div class="neuron" style="border-color:#f472b6;color:#f472b6;"></div>
+        <div class="neuron" style="border-color:#f472b6;color:#f472b6;"></div>
+        <div class="neuron" style="border-color:#f472b6;color:#f472b6;"></div>
+        <div class="nn-label">HIDDEN 3</div>
+      </div>
+      <div class="nn-layer">
+        <div class="neuron" style="border-color:#ec4899;color:#ec4899;"></div>
+        <div class="neuron" style="border-color:#ec4899;color:#ec4899;"></div>
+        <div class="nn-label">OUTPUT</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-row">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+      <div><div class="info-label">Name</div><div class="info-value">AMIT KUMAR</div></div>
+    </div>
+    <div class="info-row">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg></div>
+      <div><div class="info-label">Course</div><div class="info-value">AI & Machine Learning</div></div>
+    </div>
+    <div class="info-row">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg></div>
+      <div><div class="info-label">Semester</div><div class="info-value" style="font-size:20px;color:#c084fc;">5TH</div></div>
+    </div>
+    <div class="info-row">
+      <div class="info-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg></div>
+      <div><div class="info-label">Roll No.</div><div class="info-value" style="font-size:20px;color:#f472b6;">49</div></div>
+    </div>
+  </div>
+
+  <div class="books-stack">
+    <div class="book" style="background:linear-gradient(90deg,#7c3aed,#6d28d9);width:130px;">Neural Networks</div>
+    <div class="book" style="background:linear-gradient(90deg,#db2777,#be185d);width:140px;">Deep Learning</div>
+    <div class="book" style="background:linear-gradient(90deg,#2563eb,#1d4ed8);width:150px;">Computer Vision</div>
+    <div class="book" style="background:linear-gradient(90deg,#059669,#047857);width:115px;">NLP</div>
+  </div>
+
+  <div class="bottom-section">
+    <div class="bottom-grad"></div>
+    <div class="session-info">SESSION 2026-27 &nbsp;•&nbsp; GOVERNMENT POLYTECHNIC BARH</div>
+    <div class="bottom-tag"><span class="nm">Layers of Knowledge, </span><span class="hl">Depths of Intelligence...</span></div>
+  </div>
+
+  <div id="particles"></div>
+</div>
+<script>
+  const pc=document.getElementById('particles');
+  const cols=['#8b5cf6','#c084fc','#ec4899','#f472b6','#60a5fa','#a78bfa'];
+  for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle';const s=Math.random()*4+2;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*560+35}px;background:${cols[Math.floor(Math.random()*cols.length)]};box-shadow:0 0 ${s*2}px ${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*10}s;`;
+    pc.appendChild(p);}
+  const c=document.getElementById('netCanvas'),x=c.getContext('2d');c.width=595;c.height=842;
+  const nodes=[];for(let i=0;i<18;i++)nodes.push({x:Math.random()*560+35,y:Math.random()*842,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,r:Math.random()*2+1});
+  function draw(){x.clearRect(0,0,595,842);nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<35||n.x>595)n.vx*=-1;if(n.y<0||n.y>842)n.vy*=-1;});
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const d=Math.hypot(nodes[i].x-nodes[j].x,nodes[i].y-nodes[j].y);if(d<140){x.beginPath();x.moveTo(nodes[i].x,nodes[i].y);x.lineTo(nodes[j].x,nodes[j].y);x.strokeStyle=`rgba(139,92,246,${(1-d/140)*0.15})`;x.lineWidth=0.5;x.stroke();}}
+    nodes.forEach(n=>{x.beginPath();x.arc(n.x,n.y,n.r,0,Math.PI*2);x.fillStyle='rgba(192,132,252,0.4)';x.fill();});requestAnimationFrame(draw);}draw();
+</script>
+</body>
+</html>
