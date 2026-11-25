@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHAMGADAR — Big Data Analytics (30-Page Handwritten Notes)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 14px;
+      font-family: 'Panton Arabic Semi Bold', 'Panton Arabic', 'Panton', 'Nunito', 'Kalam', sans-serif;
+      font-weight: 600;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Navigation Bar */
+    .nav-bar {
+      width: 100%;
+      max-width: 790px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .nav-btn {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .nav-btn.pdf-btn {
+      background: linear-gradient(135deg, #dc2626, #ea580c);
+    }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #475569;
+      background: transparent;
+      color: #e2e8f0;
+    }
+    .pill.active {
+      background: #facc15;
+      border-color: #facc15;
+      color: #0f172a;
+    }
+
+    /* Stage & Clean Borderless Notebook Shell */
+    .stage {
+      perspective: 1800px;
+      width: 100%;
+      max-width: 790px;
+      display: flex;
+      justify-content: center;
+    }
+    .notebook-shell {
+      position: relative;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      background: #fffef7;
+    }
+
+    /* Pages (Zero Left Black Bar, Natural Full Height, Zero Blank Gap!) */
+    .page {
+      display: none;
+      width: 100%;
+      padding: 20px 30px 26px 58px;
+      color: #1e40af;
+      transform-origin: left center;
+      position: relative;
+    }
+    .page.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+    .page.flip-next { animation: flipNext 0.38s ease; }
+    .page.flip-prev { animation: flipPrev 0.38s ease; }
+    @keyframes flipNext {
+      0% { opacity: 0.3; transform: rotateY(-14deg); }
+      100% { opacity: 1; transform: rotateY(0deg); }
+    }
+    @keyframes flipPrev {
+      0% { opacity: 0.3; transform: rotateY(14deg); }
+      100% { opacity: 1; transform: rotateY(0deg); }
+    }
+
+    /* Ruled Paper */
+    .ruled-paper {
+      background-color: #fffef7;
+      background-image: linear-gradient(to bottom, transparent 27px, #dbeafe 28px);
+      background-size: 100% 28px;
+    }
+    .ruled-paper::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 42px;
+      width: 3px;
+      border-left: 1.5px solid #ef4444;
+      border-right: 1px solid #fca5a5;
+      z-index: 5;
+    }
+    .ruled-paper::after {
+      content: '';
+      position: absolute;
+      top: 74px; left: 0; right: 0;
+      height: 2px;
+      border-top: 1.5px solid #ef4444;
+      z-index: 5;
+    }
+
+    /* Cover Page — Authentic Handwritten Notebook Cover */
+    .cover-page {
+      background-color: #fdf8ec;
+      background-image: linear-gradient(to bottom, transparent 27px, #e2e8f0 28px);
+      background-size: 100% 28px;
+      color: #111827;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 780px;
+      padding: 28px 34px;
+      position: relative;
+    }
+    .cover-page.active { display: flex; }
+    .cover-frame {
+      border: 3px solid #111827;
+      outline: 2px dashed #dc2626;
+      outline-offset: -8px;
+      border-radius: 14px;
+      padding: 24px 26px;
+      min-height: 730px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(255, 254, 247, 0.9);
+    }
+
+    /* CHAMGADAR Top & Bottom Bars */
+    .chamgadar-bar {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #dc2626;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .chamgadar-bar span {
+      color: #111827;
+      font-size: 11.5px;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .page-footer {
+      margin-top: 10px;
+      padding-top: 6px;
+      border-top: 1.5px dashed #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    /* Page Header */
+    .nb-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 2px;
+    }
+    .unit-pill {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #111827;
+      background: #fef08a;
+      padding: 3px 11px;
+      border-radius: 6px;
+      border: 1.5px solid #111827;
+    }
+    .page-stamp {
+      border: 1.5px solid #dc2626;
+      color: #dc2626;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 3px 11px;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    /* 3-Pen Color Typography with Comfortable Breathing Space */
+    .q-black {
+      color: #111827;
+      font-size: 17px;
+      font-weight: 700;
+      margin: 8px 0 8px;
+      border-bottom: 2px solid #dc2626;
+      padding-bottom: 4px;
+    }
+    .h-black {
+      color: #111827;
+      font-size: 15.5px;
+      font-weight: 700;
+      margin: 12px 0 5px;
+      text-decoration: underline;
+      text-decoration-color: #dc2626;
+    }
+    .ans-blue {
+      color: #1e40af;
+      font-size: 15px;
+      line-height: 1.62;
+      margin: 5px 0 8px;
+    }
+    .def-red {
+      color: #b91c1c;
+      background: #fef2f2;
+      border: 1.5px dashed #ef4444;
+      border-radius: 8px;
+      padding: 9px 13px;
+      font-size: 14.8px;
+      line-height: 1.56;
+      margin: 7px 0 10px;
+    }
+    .conc-red {
+      color: #991b1b;
+      background: #fff1f2;
+      border-left: 4px solid #dc2626;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 14.4px;
+      line-height: 1.52;
+      margin-top: 8px;
+    }
+    .imp { color: #dc2626; font-weight: 700; }
+
+    /* Highlighters */
+    .hl-y { background: #fef08a; padding: 0 4px; border-radius: 3px; font-weight: 700; color: #111827; }
+    .hl-p { background: #fce7f3; padding: 0 4px; border-radius: 3px; font-weight: 700; color: #9d174d; }
+    .hl-g { background: #dcfce7; padding: 0 4px; border-radius: 3px; font-weight: 700; color: #166534; }
+
+    ul, ol { margin: 6px 0 10px 20px; padding: 0; }
+    li { font-size: 14.8px; line-height: 1.6; color: #1e40af; margin-bottom: 5px; }
+
+    /* Tables */
+    table.hw-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 9px 0;
+      font-size: 13.8px;
+      background: rgba(255, 255, 255, 0.92);
+    }
+    table.hw-table th {
+      background: #fef08a;
+      color: #111827;
+      border: 1.4px solid #111827;
+      padding: 6px 9px;
+      text-align: left;
+      font-weight: 700;
+    }
+    table.hw-table td {
+      border: 1.1px solid #475569;
+      padding: 6px 9px;
+      color: #1e40af;
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    /* Pros & Cons Grid */
+    .pc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 9px 0;
+    }
+    .pc-box {
+      border-radius: 8px;
+      padding: 8px 11px;
+      font-size: 14px;
+      line-height: 1.48;
+    }
+    .pc-pro { background: #f0fdf4; border: 1.4px solid #16a34a; color: #166534; }
+    .pc-con { background: #fef2f2; border: 1.4px solid #dc2626; color: #991b1b; }
+
+    /* Code & SVG Diagram Boxes */
+    .code-box {
+      background: #f8fafc;
+      border: 1.4px solid #334155;
+      border-left: 4px solid #dc2626;
+      border-radius: 7px;
+      padding: 9px 12px;
+      margin: 9px 0;
+      font-family: 'Consolas', monospace;
+      font-size: 12.2px;
+      line-height: 1.48;
+      color: #111827;
+      white-space: pre-wrap;
+    }
+    .svg-wrap {
+      margin: 9px 0;
+      display: flex;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1.5px dashed #64748b;
+      border-radius: 9px;
+      padding: 10px;
+    }
+    svg text { font-family: 'Panton Arabic Semi Bold', 'Panton Arabic', 'Panton', 'Nunito', 'Kalam', sans-serif; font-weight: 600; }
+
+    /* Print / PDF Export Styling */
+    @page { size: A4 portrait; margin: 0; }
+    @media print {
+      body { background: #fff; padding: 0; margin: 0; }
+      .nav-bar, #statusText { display: none !important; }
+      .stage, .notebook-shell { max-width: 100%; box-shadow: none; border-radius: 0; }
+      .page {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 6px;
+        page-break-after: always;
+        break-after: page;
+        min-height: 296mm;
+        height: 296mm;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .cover-page { display: flex !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Toolbar -->
+  <div class="nav-bar">
+    <div style="display:flex;gap:6px;">
+      <button class="nav-btn" id="prevBtn" onclick="flipPage(-1)">⬅️ Prev</button>
+      <button class="nav-btn" id="nextBtn" onclick="flipPage(1)">Next ➡️</button>
+    </div>
+    <div style="display:flex;gap:3px;flex-wrap:wrap;justify-content:center;" id="pagePills">
+      <button class="pill active" onclick="goToPage(0)">Cov</button>
+      <button class="pill" onclick="goToPage(1)">Idx</button>
+      <button class="pill" onclick="goToPage(2)">1</button><button class="pill" onclick="goToPage(3)">2</button>
+      <button class="pill" onclick="goToPage(4)">3</button><button class="pill" onclick="goToPage(5)">4</button>
+      <button class="pill" onclick="goToPage(6)">5</button><button class="pill" onclick="goToPage(7)">6</button>
+      <button class="pill" onclick="goToPage(8)">7</button><button class="pill" onclick="goToPage(9)">8</button>
+      <button class="pill" onclick="goToPage(10)">9</button><button class="pill" onclick="goToPage(11)">10</button>
+      <button class="pill" onclick="goToPage(12)">11</button><button class="pill" onclick="goToPage(13)">12</button>
+      <button class="pill" onclick="goToPage(14)">13</button><button class="pill" onclick="goToPage(15)">14</button>
+      <button class="pill" onclick="goToPage(16)">15</button><button class="pill" onclick="goToPage(17)">16</button>
+      <button class="pill" onclick="goToPage(18)">17</button><button class="pill" onclick="goToPage(19)">18</button>
+      <button class="pill" onclick="goToPage(20)">19</button><button class="pill" onclick="goToPage(21)">20</button>
+      <button class="pill" onclick="goToPage(22)">21</button><button class="pill" onclick="goToPage(23)">22</button>
+      <button class="pill" onclick="goToPage(24)">23</button><button class="pill" onclick="goToPage(25)">24</button>
+      <button class="pill" onclick="goToPage(26)">25</button><button class="pill" onclick="goToPage(27)">26</button>
+      <button class="pill" onclick="goToPage(28)">27</button><button class="pill" onclick="goToPage(29)">28</button>
+      <button class="pill" onclick="goToPage(30)">29</button><button class="pill" onclick="goToPage(31)">30</button>
+    </div>
+    <button class="nav-btn pdf-btn" onclick="window.print()">📄 Download PDF</button>
+  </div>
+
+  <!-- Notebook Stage -->
+  <div class="stage">
+    <div class="notebook-shell">
+
+      <!-- SLIDE 0: HANDWRITTEN COVER -->
+      <div class="page cover-page active" data-idx="0">
+        <div class="cover-frame">
+          <div style="text-align:center;">
+            <div style="display:inline-block;background:#fef08a;border:2px solid #111827;border-radius:999px;padding:4px 20px;font-size:17px;font-weight:800;letter-spacing:4px;color:#dc2626;">
+              🦇 CHAMGADAR 🦇
+            </div>
+            <div style="font-size:12.5px;color:#1e40af;margin-top:6px;letter-spacing:2px;">
+              HANDWRITTEN CLASS NOTEBOOK • SESSION 2026-27
+            </div>
+          </div>
+
+          <!-- Handwritten Title + Hand-Drawn SVG Doodles -->
+          <div style="text-align:center;margin:10px 0;">
+            <div style="font-size:13px;color:#dc2626;letter-spacing:3px;font-weight:700;">SUBJECT</div>
+            <div style="font-size:52px;font-weight:800;color:#111827;line-height:1.1;margin-top:4px;text-decoration:underline;text-decoration-color:#dc2626;text-underline-offset:8px;">
+              Big Data Analytics
+            </div>
+            <div style="font-size:17px;color:#1e40af;margin-top:14px;">
+              <span class="hl-y">Simple English</span> • <span class="hl-g">2D / Architecture Diagrams</span> • <span class="hl-p">Exam Ready (4 & 6 Marks)</span>
+            </div>
+
+            <!-- Hand-Drawn Notebook Cover Doodle Sketch -->
+            <div class="svg-wrap" style="margin:22px auto 12px;max-width:560px;background:#fff;">
+              <svg width="530" height="230" viewBox="0 0 530 230">
+                <!-- Central Globe / Cluster -->
+                <circle cx="265" cy="112" r="52" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.2" stroke-dasharray="5 3"/>
+                <circle cx="265" cy="112" r="34" fill="#fef08a" stroke="#111827" stroke-width="2"/>
+                <text x="265" y="108" text-anchor="middle" font-size="14" font-weight="800" fill="#dc2626">BIG DATA</text>
+                <text x="265" y="126" text-anchor="middle" font-size="11" fill="#111827">5 Vs + AI</text>
+
+                <!-- 4 Hand-Drawn Subject Boxes -->
+                <rect x="16" y="18" width="145" height="54" rx="8" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+                <text x="88" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Unit 1: Basics</text>
+                <text x="88" y="60" text-anchor="middle" font-size="11" fill="#166534">5 Vs • Scaling • BI</text>
+
+                <rect x="369" y="18" width="145" height="54" rx="8" fill="#fce7f3" stroke="#be185d" stroke-width="2"/>
+                <text x="441" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Unit 2: Hadoop</text>
+                <text x="441" y="60" text-anchor="middle" font-size="11" fill="#9d174d">HDFS • YARN • MR</text>
+
+                <rect x="16" y="156" width="145" height="54" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+                <text x="88" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Unit 3: NoSQL</text>
+                <text x="88" y="198" text-anchor="middle" font-size="11" fill="#854d0e">NewSQL • EDA • FD</text>
+
+                <rect x="369" y="156" width="145" height="54" rx="8" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+                <text x="441" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Unit 4: MongoDB</text>
+                <text x="441" y="198" text-anchor="middle" font-size="11" fill="#1e40af">BSON • CRUD • Index</text>
+
+                <!-- Hand-drawn connecting arrows -->
+                <line x1="161" y1="54" x2="218" y2="88" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+                <line x1="369" y1="54" x2="312" y2="88" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+                <line x1="161" y1="176" x2="218" y2="138" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+                <line x1="369" y1="176" x2="312" y2="138" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+              </svg>
+            </div>
+
+            <div style="display:inline-flex;gap:10px;font-size:12.5px;margin-top:6px;">
+              <span style="color:#111827;border:1.5px solid #111827;padding:3px 10px;border-radius:6px;background:#fff;">⬛ Black: Headings</span>
+              <span style="color:#1d4ed8;border:1.5px solid #1d4ed8;padding:3px 10px;border-radius:6px;background:#eff6ff;">🟦 Blue: Answers</span>
+              <span style="color:#dc2626;border:1.5px solid #dc2626;padding:3px 10px;border-radius:6px;background:#fef2f2;">🟥 Red: Def & Conclusion</span>
+            </div>
+          </div>
+
+          <!-- Classic Handwritten Notebook Name Slip -->
+          <div style="border:2px solid #111827;border-radius:12px;padding:16px 22px;background:#fffef7;box-shadow:4px 4px 0 #dc2626;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:15px;">
+              <div><span style="color:#dc2626;font-weight:700;">Name :</span> <span style="color:#111827;font-weight:800;border-bottom:1.5px dashed #1e40af;">AMIT KUMAR</span></div>
+              <div><span style="color:#dc2626;font-weight:700;">Roll No. :</span> <span style="color:#111827;font-weight:800;border-bottom:1.5px dashed #1e40af;">49</span></div>
+              <div><span style="color:#dc2626;font-weight:700;">Course :</span> <span style="color:#1e40af;font-weight:700;border-bottom:1.5px dashed #1e40af;">AI & Machine Learning</span></div>
+              <div><span style="color:#dc2626;font-weight:700;">Semester :</span> <span style="color:#1e40af;font-weight:700;border-bottom:1.5px dashed #1e40af;">5th Semester</span></div>
+            </div>
+            <div style="margin-top:10px;padding-top:8px;border-top:1.5px dashed #94a3b8;display:flex;justify-content:space-between;font-size:12.5px;color:#111827;">
+              <span>🏫 <strong>Government Polytechnic Barh</strong></span>
+              <span>📖 <strong>Total Pages: 1 – 30</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 1: INDEX (ONLY INDEX — ZERO FILLER!) -->
+      <div class="page ruled-paper" data-idx="1">
+        <div class="nb-top">
+          <span class="unit-pill">📑 COMPLETE INDEX (Click any Topic to Open)</span>
+          <span class="page-stamp">INDEX</span>
+        </div>
+        <table class="hw-table" style="font-size:13.2px;">
+          <thead><tr><th style="width:118px;">Unit No.</th><th>Topic Name</th><th style="width:76px;text-align:center;">Page No.</th></tr></thead>
+          <tbody>
+            <tr onclick="goToPage(2)" style="cursor:pointer;"><td><strong>Unit 1.1</strong></td><td>Introduction of Big Data &amp; Traditional vs. Big Data</td><td style="text-align:center;"><strong>01</strong></td></tr>
+            <tr onclick="goToPage(3)" style="cursor:pointer;"><td><strong>Unit 1.1</strong></td><td>Key Characteristics of Big Data (The 5 Vs)</td><td style="text-align:center;"><strong>02</strong></td></tr>
+            <tr onclick="goToPage(4)" style="cursor:pointer;"><td><strong>Unit 1.1</strong></td><td>How Big Data Is Processed &amp; Common Big Data Tools</td><td style="text-align:center;"><strong>03</strong></td></tr>
+            <tr onclick="goToPage(5)" style="cursor:pointer;"><td><strong>Unit 1.2</strong></td><td>Basics of Big Data: Structured, Semi-Structured &amp; Unstructured</td><td style="text-align:center;"><strong>04</strong></td></tr>
+            <tr onclick="goToPage(6)" style="cursor:pointer;"><td><strong>Unit 1.2</strong></td><td>Big Data Architecture Layers &amp; Vertical vs. Horizontal Scaling</td><td style="text-align:center;"><strong>05</strong></td></tr>
+            <tr onclick="goToPage(7)" style="cursor:pointer;"><td><strong>Unit 1.2</strong></td><td>4 Types of Big Data Analytics (Descriptive to Prescriptive)</td><td style="text-align:center;"><strong>06</strong></td></tr>
+            <tr onclick="goToPage(8)" style="cursor:pointer;"><td><strong>Unit 1.3</strong></td><td>Significance of Big Data Across Major Industries &amp; AI/ML</td><td style="text-align:center;"><strong>07</strong></td></tr>
+            <tr onclick="goToPage(9)" style="cursor:pointer;"><td><strong>Unit 2.1</strong></td><td>Introduction of Hadoop, History, Features &amp; Data Locality</td><td style="text-align:center;"><strong>08</strong></td></tr>
+            <tr onclick="goToPage(10)" style="cursor:pointer;"><td><strong>Unit 2.2</strong></td><td>Hadoop Ecosystem Overview (Core &amp; Ecosystem Tools)</td><td style="text-align:center;"><strong>09</strong></td></tr>
+            <tr onclick="goToPage(11)" style="cursor:pointer;"><td><strong>Unit 2.3</strong></td><td>HDFS Basics, NameNode vs. DataNode &amp; Architecture</td><td style="text-align:center;"><strong>10</strong></td></tr>
+            <tr onclick="goToPage(12)" style="cursor:pointer;"><td><strong>Unit 2.3</strong></td><td>HDFS File Storing, Replication &amp; Rack Awareness</td><td style="text-align:center;"><strong>11</strong></td></tr>
+            <tr onclick="goToPage(13)" style="cursor:pointer;"><td><strong>Unit 2.3</strong></td><td>HDFS Fault Tolerance &amp; Data Recovery Mechanisms</td><td style="text-align:center;"><strong>12</strong></td></tr>
+            <tr onclick="goToPage(14)" style="cursor:pointer;"><td><strong>Unit 2.4</strong></td><td>Hadoop Architecture (YARN + HDFS) &amp; Hadoop 1.0 vs. 2.0/3.0</td><td style="text-align:center;"><strong>13</strong></td></tr>
+            <tr onclick="goToPage(15)" style="cursor:pointer;"><td><strong>Unit 2.5</strong></td><td>MapReduce Phases &amp; WordCount Workflow Example</td><td style="text-align:center;"><strong>14</strong></td></tr>
+            <tr onclick="goToPage(16)" style="cursor:pointer;"><td><strong>Unit 2.5</strong></td><td>Mapper vs. Reducer &amp; MapReduce Job Execution Anatomy</td><td style="text-align:center;"><strong>15</strong></td></tr>
+            <tr onclick="goToPage(17)" style="cursor:pointer;"><td><strong>Unit 3.1</strong></td><td>Introduction to NoSQL (Definition, Features &amp; Applications)</td><td style="text-align:center;"><strong>16</strong></td></tr>
+            <tr onclick="goToPage(18)" style="cursor:pointer;"><td><strong>Unit 3.2</strong></td><td>Types of NoSQL: Document-Based &amp; Key-Value Stores</td><td style="text-align:center;"><strong>17</strong></td></tr>
+            <tr onclick="goToPage(19)" style="cursor:pointer;"><td><strong>Unit 3.2</strong></td><td>Types of NoSQL: Column-Oriented &amp; Graph-Based Databases</td><td style="text-align:center;"><strong>18</strong></td></tr>
+            <tr onclick="goToPage(20)" style="cursor:pointer;"><td><strong>Unit 3.3 - 3.4</strong></td><td>Advantages of NoSQL &amp; Use of NoSQL in Industry</td><td style="text-align:center;"><strong>19</strong></td></tr>
+            <tr onclick="goToPage(21)" style="cursor:pointer;"><td><strong>Unit 3.5 - 3.7</strong></td><td>SQL vs. NoSQL &amp; Concept of NewSQL</td><td style="text-align:center;"><strong>20</strong></td></tr>
+            <tr onclick="goToPage(22)" style="cursor:pointer;"><td><strong>Unit 3 (Lab)</strong></td><td>Hands-on Indexing for Engineering Data</td><td style="text-align:center;"><strong>21</strong></td></tr>
+            <tr onclick="goToPage(23)" style="cursor:pointer;"><td><strong>Unit 3 (Lab)</strong></td><td>Exploratory Data Analysis (EDA) in Python</td><td style="text-align:center;"><strong>22</strong></td></tr>
+            <tr onclick="goToPage(24)" style="cursor:pointer;"><td><strong>Unit 3 (Theory)</strong></td><td>Functional Dependency, Trivial/Non-Trivial FD &amp; Closure (F⁺, X⁺)</td><td style="text-align:center;"><strong>23</strong></td></tr>
+            <tr onclick="goToPage(25)" style="cursor:pointer;"><td><strong>Unit 4.1</strong></td><td>Introduction to MongoDB &amp; Comparison with RDBMS</td><td style="text-align:center;"><strong>24</strong></td></tr>
+            <tr onclick="goToPage(26)" style="cursor:pointer;"><td><strong>Unit 4.1 - 4.2</strong></td><td>MongoDB Use Cases, Collections, Documents &amp; BSON Format</td><td style="text-align:center;"><strong>25</strong></td></tr>
+            <tr onclick="goToPage(27)" style="cursor:pointer;"><td><strong>Unit 4.2</strong></td><td>Data Modeling &amp; Schema Design for Engineering Data</td><td style="text-align:center;"><strong>26</strong></td></tr>
+            <tr onclick="goToPage(28)" style="cursor:pointer;"><td><strong>Unit 4.3</strong></td><td>CRUD in MongoDB Shell: Create (Insert) &amp; Read (Retrieve)</td><td style="text-align:center;"><strong>27</strong></td></tr>
+            <tr onclick="goToPage(29)" style="cursor:pointer;"><td><strong>Unit 4.3</strong></td><td>CRUD in MongoDB Shell: Update &amp; Delete Operations</td><td style="text-align:center;"><strong>28</strong></td></tr>
+            <tr onclick="goToPage(30)" style="cursor:pointer;"><td><strong>Unit 4.4</strong></td><td>MongoDB Data Modeling Best Practices</td><td style="text-align:center;"><strong>29</strong></td></tr>
+            <tr onclick="goToPage(31)" style="cursor:pointer;"><td><strong>Unit 4.4</strong></td><td>Indexing for Performance Optimization in MongoDB</td><td style="text-align:center;"><strong>30</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGE 1 -->
+      <div class="page ruled-paper" data-idx="2">
+        <div class="nb-top"><span class="unit-pill">Unit 1.1: Introduction of Big Data</span><span class="page-stamp">Page: 01</span></div>
+        <div class="q-black">Q. What is Big Data? Compare Traditional Data vs. Big Data. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Big Data</strong> refers to <span class="hl-y">extremely large, fast-moving, and complex datasets</span> that traditional tools (like MS Excel or single-PC MySQL) cannot store or process within a reasonable time.</div>
+        <div class="h-black">Detailed Explanation & Real-Life Example:</div>
+        <ul>
+          <li><strong>Why Traditional Tools Fail:</strong> RDBMS handles structured tables up to Gigabytes (GB) on 1 server, whereas modern apps generate Terabytes (TB) & Petabytes (PB) of mixed data every minute.</li>
+          <li><strong>Student Example:</strong> Storing 60 students' marks in Excel = <em>Traditional Data</em>.</li>
+          <li><strong>Company Example:</strong> Instagram uploading 65,000+ photos/min & Zomato tracking lakhs of live orders = <strong>Big Data</strong>.</li>
+        </ul>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Traditional Data</th><th>Big Data</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Size / Volume</strong></td><td>MB to GB</td><td><span class="hl-y">TB to PB & Exabytes</span></td></tr>
+            <tr><td><strong>Format</strong></td><td>Structured Tables only</td><td>Tables + JSON + Videos/Images</td></tr>
+            <tr><td><strong>Storage & Speed</strong></td><td>1 Server; Slow/Batch</td><td>Distributed Cluster; Real-time</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Architecture Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="560" height="92" viewBox="0 0 560 92">
+            <rect x="15" y="10" width="180" height="72" rx="8" fill="#eff6ff" stroke="#111827" stroke-width="1.8"/>
+            <text x="105" y="34" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Traditional (1 PC)</text>
+            <text x="105" y="54" text-anchor="middle" font-size="12" fill="#1e40af">Excel / MySQL (GB)</text>
+            <text x="105" y="72" text-anchor="middle" font-size="11" fill="#dc2626">Tables Only</text>
+            <text x="242" y="52" font-size="17" font-weight="700" fill="#dc2626">VS</text>
+            <rect x="295" y="10" width="250" height="72" rx="8" fill="#fefce8" stroke="#111827" stroke-width="1.8"/>
+            <text x="420" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Big Data (Cluster)</text>
+            <rect x="312" y="40" width="58" height="32" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="341" y="61" text-anchor="middle" font-size="11" fill="#111827">PC 1</text>
+            <rect x="391" y="40" width="58" height="32" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="420" y="61" text-anchor="middle" font-size="11" fill="#111827">PC 2</text>
+            <rect x="470" y="40" width="58" height="32" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="499" y="61" text-anchor="middle" font-size="11" fill="#111827">PC 3</text>
+            <line x1="370" y1="56" x2="391" y2="56" stroke="#dc2626" stroke-width="2"/>
+            <line x1="449" y1="56" x2="470" y2="56" stroke="#dc2626" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Handles TB/PB data, discovers patterns, powers AI/ML.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Needs cluster infrastructure, skilled engineers & privacy security.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Big Data bridges the gap where traditional single-server databases fail due to size, speed, and variety.</div>
+      </div>
+
+      <!-- PAGE 2 -->
+      <div class="page ruled-paper" data-idx="3">
+        <div class="nb-top"><span class="unit-pill">Unit 1.1: The 5 Vs of Big Data</span><span class="page-stamp">Page: 02</span></div>
+        <div class="q-black">Q. Explain the 5 Vs of Big Data with Real-Life Examples. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> The <strong>5 Vs of Big Data</strong> — <span class="hl-y">Volume, Velocity, Variety, Veracity, and Value</span> — are the five core characteristics that define Big Data.</div>
+        <div class="h-black">Detailed Explanation of Each V:</div>
+        <ol>
+          <li><strong>Volume (Size):</strong> Massive amount of data in Terabytes/Petabytes. <em>Ex:</em> YouTube stores petabytes of daily videos.</li>
+          <li><strong>Velocity (Speed):</strong> High speed at which live data arrives & is processed. <em>Ex:</em> UPI fraud check in &lt;1 sec; Google Maps live traffic.</li>
+          <li><strong>Variety (Formats):</strong> Mixed data types — Structured (SQL tables), Semi-Structured (JSON/XML), Unstructured (images, audio, CCTV).</li>
+          <li><strong>Veracity (Trust & Quality):</strong> Accuracy & cleanliness of data. <em>Ex:</em> Removing fake bot reviews or faulty sensor noise.</li>
+          <li><strong>Value (Usefulness):</strong> Real profit or smart insights gained after analysis. <em>Ex:</em> Netflix recommending movies users love.</li>
+        </ol>
+        <div class="h-black">2D Star Diagram (The 5 Vs):</div>
+        <div class="svg-wrap">
+          <svg width="520" height="122" viewBox="0 0 520 122">
+            <circle cx="260" cy="61" r="30" fill="#fef08a" stroke="#111827" stroke-width="2"/>
+            <text x="260" y="66" text-anchor="middle" font-size="14" font-weight="700" fill="#dc2626">5 Vs</text>
+            <rect x="195" y="4" width="130" height="23" rx="5" fill="#eff6ff" stroke="#1d4ed8"/><text x="260" y="20" text-anchor="middle" font-size="11.5" fill="#111827">1. Volume (TB/PB)</text>
+            <rect x="360" y="26" width="140" height="23" rx="5" fill="#eff6ff" stroke="#1d4ed8"/><text x="430" y="42" text-anchor="middle" font-size="11.5" fill="#111827">2. Velocity (Speed)</text>
+            <rect x="355" y="80" width="145" height="23" rx="5" fill="#eff6ff" stroke="#1d4ed8"/><text x="427" y="96" text-anchor="middle" font-size="11.5" fill="#111827">3. Variety (Formats)</text>
+            <rect x="20" y="80" width="145" height="23" rx="5" fill="#eff6ff" stroke="#1d4ed8"/><text x="92" y="96" text-anchor="middle" font-size="11.5" fill="#111827">4. Veracity (Quality)</text>
+            <rect x="25" y="26" width="140" height="23" rx="5" fill="#eff6ff" stroke="#1d4ed8"/><text x="95" y="42" text-anchor="middle" font-size="11.5" fill="#111827">5. Value (Insights)</text>
+            <line x1="260" y1="27" x2="260" y2="31" stroke="#dc2626" stroke-width="2"/>
+            <line x1="290" y1="53" x2="360" y2="38" stroke="#dc2626" stroke-width="1.5"/>
+            <line x1="288" y1="73" x2="355" y2="90" stroke="#dc2626" stroke-width="1.5"/>
+            <line x1="232" y1="73" x2="165" y2="90" stroke="#dc2626" stroke-width="1.5"/>
+            <line x1="230" y1="53" x2="165" y2="38" stroke="#dc2626" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Guides engineers to select the right storage (HDFS/NoSQL) & engine (Spark/Kafka).</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Handling high Velocity + high Veracity simultaneously increases cost & complexity.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Without Veracity and Value, huge Volume, Velocity, and Variety are just useless digital noise.</div>
+      </div>
+
+      <!-- PAGE 3 -->
+      <div class="page ruled-paper" data-idx="4">
+        <div class="nb-top"><span class="unit-pill">Unit 1.1: Processing Lifecycle & Tools</span><span class="page-stamp">Page: 03</span></div>
+        <div class="q-black">Q. How Is Big Data Processed? Explain Common Big Data Tools. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Big Data Processing</strong> is a 3-stage pipeline that collects raw data from multiple sources, stores it on distributed clusters, and analyzes it for decisions.</div>
+        <div class="h-black">3 Stages of Processing (Real Example: Swiggy):</div>
+        <ol>
+          <li><strong>Integration:</strong> Collects & combines raw data from apps, IoT sensors, logs & DBs. <em>Ex:</em> Swiggy combines app clicks + GPS + order DB.</li>
+          <li><strong>Storage & Management:</strong> Splits & stores mixed files across distributed servers or Cloud Data Lakes (HDFS, Amazon S3).</li>
+          <li><strong>Analysis & Visualization:</strong> Runs batch/live queries, ML & dashboards (Power BI/Tableau).</li>
+        </ol>
+        <div class="h-black">Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="540" height="58" viewBox="0 0 540 58">
+            <rect x="6" y="10" width="110" height="36" rx="6" fill="#fef9c3" stroke="#111827"/><text x="61" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Apps/IoT/Logs</text>
+            <text x="122" y="33" font-size="15" fill="#dc2626">→</text>
+            <rect x="140" y="10" width="110" height="36" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="195" y="33" text-anchor="middle" font-size="11.5" fill="#111827">1. Integration</text>
+            <text x="256" y="33" font-size="15" fill="#dc2626">→</text>
+            <rect x="274" y="10" width="120" height="36" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="334" y="33" text-anchor="middle" font-size="11.5" fill="#111827">2. Storage (HDFS)</text>
+            <text x="400" y="33" font-size="15" fill="#dc2626">→</text>
+            <rect x="418" y="10" width="115" height="36" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="475" y="33" text-anchor="middle" font-size="11.5" fill="#111827">3. Analysis & BI</text>
+          </svg>
+        </div>
+        <table class="hw-table">
+          <thead><tr><th>Common Tool</th><th>Category & Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Apache Hadoop</strong></td><td>Distributed storage (HDFS) & batch processing (MapReduce).</td></tr>
+            <tr><td><strong>Apache Spark</strong></td><td><span class="hl-g">100x faster</span> in-memory distributed engine for batch, streaming & ML.</td></tr>
+            <tr><td><strong>Apache Kafka</strong></td><td>High-throughput platform for <strong>real-time event streaming</strong>.</td></tr>
+            <tr><td><strong>NoSQL & Data Lakes</strong></td><td>Flexible storage (MongoDB, Cassandra, S3) for raw/varied datasets.</td></tr>
+          </tbody>
+        </table>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Supports parallel batch + live streaming; turns raw logs into visual dashboards.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Integrating Kafka + Spark + HDFS requires skilled setup & maintenance.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> A structured 3-step pipeline powered by Hadoop, Spark, and Kafka extracts maximum value from raw Big Data.</div>
+      </div>
+
+      <!-- PAGE 4 -->
+      <div class="page ruled-paper" data-idx="5">
+        <div class="nb-top"><span class="unit-pill">Unit 1.2: Basics — 3 Types of Data</span><span class="page-stamp">Page: 04</span></div>
+        <div class="q-black">Q. Explain Structured, Semi-Structured & Unstructured Data. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Data Classification</strong> categorizes Big Data into three types based on schema structure: <span class="hl-y">Structured, Semi-Structured, and Unstructured</span>.</div>
+        <div class="h-black">Detailed Explanation & Real-Life Examples:</div>
+        <ul>
+          <li><span class="hl-g">1. Structured Data (~10–15%):</span> Fixed rows & columns (strict schema). Easy SQL search. <em>Student Ex:</em> Marks table (`Roll | Name | Marks`). <em>Company Ex:</em> Bank ledger in MySQL.</li>
+          <li><span class="hl-y">2. Semi-Structured Data (~5–10%):</span> No fixed tables, uses tags or `{key: value}`. <em>Ex:</em> Swiggy/Amazon order receipts in <strong>JSON or XML</strong>.</li>
+          <li><span class="hl-p">3. Unstructured Data (~75–80%):</span> No predefined format. Needs AI/NLP to analyze. <em>Ex:</em> WhatsApp voice notes, Instagram Reels, CCTV videos, PDFs.</li>
+        </ul>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Structured</th><th>Semi-Structured</th><th>Unstructured</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Schema</strong></td><td>Fixed & Strict</td><td>Flexible (Tags/Keys)</td><td>No Schema</td></tr>
+            <tr><td><strong>Storage</strong></td><td>RDBMS (MySQL)</td><td>NoSQL (MongoDB)</td><td>HDFS / Data Lakes</td></tr>
+            <tr><td><strong>Searchability</strong></td><td>Very Easy (SQL)</td><td>Moderate</td><td>Difficult (Needs AI)</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Classification Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="90" viewBox="0 0 520 90">
+            <rect x="190" y="4" width="140" height="26" rx="6" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="260" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111827">TYPES OF DATA</text>
+            <line x1="260" y1="30" x2="260" y2="44" stroke="#dc2626" stroke-width="2"/>
+            <line x1="85" y1="44" x2="435" y2="44" stroke="#dc2626" stroke-width="2"/>
+            <line x1="85" y1="44" x2="85" y2="56" stroke="#dc2626" stroke-width="2"/><line x1="260" y1="44" x2="260" y2="56" stroke="#dc2626" stroke-width="2"/><line x1="435" y1="44" x2="435" y2="56" stroke="#dc2626" stroke-width="2"/>
+            <rect x="15" y="56" width="140" height="28" rx="6" fill="#dcfce7" stroke="#166534"/><text x="85" y="75" text-anchor="middle" font-size="12" fill="#111827">Structured (SQL)</text>
+            <rect x="190" y="56" width="140" height="28" rx="6" fill="#fef9c3" stroke="#ca8a04"/><text x="260" y="75" text-anchor="middle" font-size="12" fill="#111827">Semi-Struct (JSON)</text>
+            <rect x="365" y="56" width="140" height="28" rx="6" fill="#fce7f3" stroke="#9d174d"/><text x="435" y="75" text-anchor="middle" font-size="12" fill="#111827">Unstructured (Video)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Helps choose the optimal DB (SQL vs MongoDB vs Data Lake).</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Unstructured data (~80%) takes huge storage & needs complex AI/ML parsing.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Modern Big Data platforms are built primarily to unlock value from ~80% unstructured & semi-structured data.</div>
+      </div>
+
+      <!-- PAGE 5 -->
+      <div class="page ruled-paper" data-idx="6">
+        <div class="nb-top"><span class="unit-pill">Unit 1.2: Architecture & Scaling</span><span class="page-stamp">Page: 05</span></div>
+        <div class="q-black">Q. Explain Big Data Architecture & Vertical vs. Horizontal Scaling. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Big Data Architecture</strong> is a 5-layer blueprint for data flow, while <strong>Scaling</strong> means increasing a system's capacity to handle growing data & users.</div>
+        <div class="h-black">5 Layers of Architecture:</div>
+        <p class="ans-blue"><strong>1. Sources</strong> (Apps, IoT, Logs) → <strong>2. Ingestion</strong> (Sqoop, Kafka) → <strong>3. Storage</strong> (HDFS, S3, NoSQL) → <strong>4. Processing</strong> (MapReduce, Spark) → <strong>5. Analytics</strong> (ML, Power BI).</p>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Vertical Scaling (Scale-Up)</th><th>Horizontal Scaling (Scale-Out)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Concept</strong></td><td>Upgrade <strong>1 PC</strong> (More RAM/CPU)</td><td>Add <strong>more PCs (Nodes)</strong> to cluster</td></tr>
+            <tr><td><strong>Cost & Limit</strong></td><td>Very costly; Hardware limit</td><td>Cost-effective; <strong>Unlimited scale</strong></td></tr>
+            <tr><td><strong>Fault Tolerance</strong></td><td>Low (1 PC fails = system down)</td><td><span class="hl-g">High</span> (Other nodes keep working)</td></tr>
+            <tr><td><strong>Used By</strong></td><td>Traditional RDBMS (MySQL)</td><td><strong>Hadoop, Spark, NoSQL</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Scaling Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="84" viewBox="0 0 520 84">
+            <rect x="20" y="10" width="160" height="64" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.6"/>
+            <text x="100" y="34" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111827">Vertical (Scale-Up)</text>
+            <text x="100" y="54" text-anchor="middle" font-size="11.5" fill="#991b1b">1 Big Server (++CPU/RAM)</text>
+            <rect x="240" y="10" width="260" height="64" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.6"/>
+            <text x="370" y="28" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111827">Horizontal (Scale-Out)</text>
+            <rect x="255" y="36" width="60" height="28" rx="4" fill="#dcfce7" stroke="#15803d"/><text x="285" y="55" text-anchor="middle" font-size="11" fill="#111827">Node 1</text>
+            <rect x="340" y="36" width="60" height="28" rx="4" fill="#dcfce7" stroke="#15803d"/><text x="370" y="55" text-anchor="middle" font-size="11" fill="#111827">Node 2</text>
+            <rect x="425" y="36" width="60" height="28" rx="4" fill="#dcfce7" stroke="#15803d"/><text x="455" y="55" text-anchor="middle" font-size="11" fill="#111827">Node 3</text>
+            <line x1="315" y1="50" x2="340" y2="50" stroke="#dc2626" stroke-width="2"/><line x1="400" y1="50" x2="425" y2="50" stroke="#dc2626" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Horizontal scaling removes single point of failure & grows cheaply.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Multi-node clusters add network latency & coordination overhead.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Big Data systems prefer Horizontal Scaling across layered architectures for limitless, fault-tolerant growth.</div>
+      </div>
+
+      <!-- PAGE 6 -->
+      <div class="page ruled-paper" data-idx="7">
+        <div class="nb-top"><span class="unit-pill">Unit 1.2: 4 Types of Analytics</span><span class="page-stamp">Page: 06</span></div>
+        <div class="q-black">Q. Explain the 4 Types of Big Data Analytics with Real Examples. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Big Data Analytics</strong> has 4 progressive levels — <span class="hl-y">Descriptive, Diagnostic, Predictive, and Prescriptive</span> — from past reporting to smart decision automation.</div>
+        <table class="hw-table">
+          <thead><tr><th>Analytics Type</th><th>Question</th><th>Flipkart Real-World Example</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1. Descriptive</strong></td><td><em>"What happened?"</em></td><td>Today's total orders = 50,000 worth ₹4 Crore.</td></tr>
+            <tr><td><strong>2. Diagnostic</strong></td><td><em>"Why did it happen?"</em></td><td>Orders dropped 15% at 3 PM because UPI server was down.</td></tr>
+            <tr><td><strong>3. Predictive</strong></td><td><em>"What will happen?"</em></td><td>ML forecasts smartphone sales will jump 40% on Diwali.</td></tr>
+            <tr><td><strong>4. Prescriptive</strong></td><td><em>"What should we do?"</em></td><td>Pre-stock 10,000 extra phones in Patna warehouse!</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="540" height="64" viewBox="0 0 540 64">
+            <rect x="4" y="12" width="114" height="40" rx="7" fill="#dbeafe" stroke="#1d4ed8"/><text x="61" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">1. Descriptive</text><text x="61" y="45" text-anchor="middle" font-size="10" fill="#1e40af">(Past Report)</text>
+            <text x="124" y="36" font-size="15" fill="#dc2626">→</text>
+            <rect x="142" y="12" width="114" height="40" rx="7" fill="#fef9c3" stroke="#ca8a04"/><text x="199" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">2. Diagnostic</text><text x="199" y="45" text-anchor="middle" font-size="10" fill="#854d0e">(Root Cause)</text>
+            <text x="262" y="36" font-size="15" fill="#dc2626">→</text>
+            <rect x="280" y="12" width="114" height="40" rx="7" fill="#fce7f3" stroke="#be185d"/><text x="337" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">3. Predictive</text><text x="337" y="45" text-anchor="middle" font-size="10" fill="#9d174d">(Forecast ML)</text>
+            <text x="400" y="36" font-size="15" fill="#dc2626">→</text>
+            <rect x="418" y="12" width="116" height="40" rx="7" fill="#dcfce7" stroke="#15803d"/><text x="476" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">4. Prescriptive</text><text x="476" y="45" text-anchor="middle" font-size="10" fill="#166534">(Best Action)</text>
+          </svg>
+        </div>
+        <div class="h-black">Student Example:</div>
+        <p class="ans-blue">Tracking your 4th Sem marks (<em>Descriptive</em>), finding weak subjects (<em>Diagnostic</em>), predicting 5th Sem CGPA (<em>Predictive</em>), and making a study timetable (<em>Prescriptive</em>).</p>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Reduces business losses, forecasts demand accurately, automates smart actions.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Predictive & Prescriptive levels need clean historical data and complex ML tuning.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Combining all 4 analytics levels converts historical records into proactive, profit-making decisions.</div>
+      </div>
+
+      <!-- PAGE 7 -->
+      <div class="page ruled-paper" data-idx="8">
+        <div class="nb-top"><span class="unit-pill">Unit 1.3: Significance of Big Data</span><span class="page-stamp">Page: 07</span></div>
+        <div class="q-black">Q. Explain the Significance of Big Data Across Major Industries. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Significance of Big Data</strong> means the <span class="hl-y">strategic value and positive impact</span> of data analytics on decisions, cost reduction, fraud safety, and AI. Data is called the <strong>"New Oil"</strong>.</div>
+        <div class="h-black">5 Core Pillars & Industry Impact:</div>
+        <table class="hw-table">
+          <thead><tr><th>Industry</th><th>Significance & Real-World Example</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1. Healthcare</strong></td><td>Early cancer/disease detection via AI MRI scans & flu outbreak tracking.</td></tr>
+            <tr><td><strong>2. Banking & UPI</strong></td><td>Blocks stolen credit cards & suspicious UPI payments in <strong>&lt;1 second</strong>.</td></tr>
+            <tr><td><strong>3. E-Commerce</strong></td><td>Amazon/Flipkart personalized product suggestions & dynamic pricing.</td></tr>
+            <tr><td><strong>4. Smart Cities</strong></td><td>Google Maps live traffic routing & smart electricity grids.</td></tr>
+            <tr><td><strong>5. AI & Education</strong></td><td>ChatGPT & self-driving cars train on massive datasets; NPTEL tracks student progress.</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Significance Hub Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="480" height="92" viewBox="0 0 480 92">
+            <rect x="175" y="30" width="130" height="32" rx="8" fill="#fef08a" stroke="#111827" stroke-width="2"/><text x="240" y="51" text-anchor="middle" font-size="13" font-weight="700" fill="#dc2626">BIG DATA</text>
+            <rect x="10" y="8" width="130" height="24" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="75" y="24" text-anchor="middle" font-size="11.5" fill="#111827">Smart Decisions</text>
+            <rect x="10" y="58" width="130" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="75" y="74" text-anchor="middle" font-size="11.5" fill="#111827">Cost Saving</text>
+            <rect x="340" y="8" width="130" height="24" rx="5" fill="#fce7f3" stroke="#be185d"/><text x="405" y="24" text-anchor="middle" font-size="11.5" fill="#111827">Fraud Control</text>
+            <rect x="340" y="58" width="130" height="24" rx="5" fill="#fef9c3" stroke="#ca8a04"/><text x="405" y="74" text-anchor="middle" font-size="11.5" fill="#111827">Fuel for AI / ML</text>
+            <line x1="140" y1="20" x2="175" y2="40" stroke="#dc2626" stroke-width="1.5"/><line x1="140" y1="70" x2="175" y2="52" stroke="#dc2626" stroke-width="1.5"/>
+            <line x1="340" y1="20" x2="305" y2="40" stroke="#dc2626" stroke-width="1.5"/><line x1="340" y1="70" x2="305" y2="52" stroke="#dc2626" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Saves lives in healthcare, beats business competitors, reduces waste, powers modern AI.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> User privacy leaks, high data-center power usage, bias if raw data is bad.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Just like oil needs refining, Big Data refined by analytics powers modern industries and AI innovation.</div>
+      </div>
+
+      <!-- PAGE 8 -->
+      <div class="page ruled-paper" data-idx="9">
+        <div class="nb-top"><span class="unit-pill">Unit 2.1: Introduction of Hadoop</span><span class="page-stamp">Page: 08</span></div>
+        <div class="q-black">Q. What is Apache Hadoop? Explain its History, Features & Data Locality. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Apache Hadoop</strong> is an <span class="hl-y">open-source, Java-based distributed framework</span> used to store and process massive datasets across clusters of cheap commodity computers.</div>
+        <div class="h-black">History & Key Features:</div>
+        <ul>
+          <li><strong>Origin Story:</strong> Inspired by Google's <strong>GFS (2003)</strong> & <strong>MapReduce (2004)</strong> papers, <strong>Doug Cutting & Mike Cafarella</strong> created Hadoop in <strong>2006</strong> (named after Doug's son's yellow toy elephant).</li>
+          <li><strong>Open-Source & Cost-Effective:</strong> Runs on ordinary commodity PCs instead of costly supercomputers.</li>
+          <li><strong>Fault-Tolerant & Scalable:</strong> Auto-saves <strong>3 copies</strong> of each block; easily scales to 10,000+ nodes.</li>
+          <li><span class="hl-g">Data Locality (★ Imp):</span> Moves <strong>computation code to the node storing the data</strong> instead of moving huge data over the network → zero network delay!</li>
+        </ul>
+        <div class="h-black">2D Data Locality Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="78" viewBox="0 0 520 78">
+            <rect x="10" y="6" width="500" height="28" rx="6" fill="#fef2f2" stroke="#dc2626"/><text x="260" y="25" text-anchor="middle" font-size="12" fill="#b91c1c">OLD WAY (Slow): [Huge Data] ===(Heavy Network Transfer)===> [Program PC]</text>
+            <rect x="10" y="42" width="500" height="28" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="260" y="61" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">HADOOP (Fast): [Data Block + Program Code on SAME PC] → Data Locality!</text>
+          </svg>
+        </div>
+        <p class="ans-blue"><strong>Real Example:</strong> Yahoo, Facebook, and banks use Hadoop clusters to analyze petabytes of user logs nightly.</p>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Handles all data formats, cheap commodity hardware, built-in fault tolerance.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> High overhead for tiny files, slower than Spark for real-time streams, basic default security.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Hadoop made petabyte-scale distributed storage and processing affordable and reliable for everyone.</div>
+      </div>
+
+      <!-- PAGE 9 -->
+      <div class="page ruled-paper" data-idx="10">
+        <div class="nb-top"><span class="unit-pill">Unit 2.2: Hadoop Ecosystem Overview</span><span class="page-stamp">Page: 09</span></div>
+        <div class="q-black">Q. Explain the Hadoop Ecosystem and its Core Components. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> The <strong>Hadoop Ecosystem</strong> is a <span class="hl-y">collection of open-source tools</span> built around core Hadoop for data ingestion, storage, resource management, processing, and querying.</div>
+        <table class="hw-table" style="font-size:12.6px;">
+          <thead><tr><th>Tool</th><th>Category</th><th>Function & Real-Life Use</th></tr></thead>
+          <tbody>
+            <tr><td><strong>HDFS</strong></td><td>Storage</td><td>Splits files into 128 MB blocks across PCs with 3x copies.</td></tr>
+            <tr><td><strong>YARN</strong></td><td>Resource Mgr</td><td>Allocates CPU & RAM and schedules jobs across nodes.</td></tr>
+            <tr><td><strong>MapReduce</strong></td><td>Batch Engine</td><td>Parallel batch processing using Map() & Reduce().</td></tr>
+            <tr><td><strong>Hive / Pig</strong></td><td>SQL / ETL</td><td>Hive = <strong>SQL queries (HiveQL)</strong> | Pig = Pig Latin cleaning scripts.</td></tr>
+            <tr><td><strong>Sqoop / Flume</strong></td><td>Ingestion</td><td>Sqoop = MySQL ↔ HDFS | Flume = Streams live server logs.</td></tr>
+            <tr><td><strong>HBase / Spark</strong></td><td>NoSQL / Fast</td><td>HBase = NoSQL DB | Spark = <strong>100x faster</strong> in-memory processing.</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">Layered Ecosystem Architecture Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="122" viewBox="0 0 510 122">
+            <rect x="20" y="4" width="470" height="24" rx="5" fill="#fce7f3" stroke="#111827"/><text x="255" y="21" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Analytics & ML: [ Hive (SQL) ]   [ Pig (ETL) ]   [ Spark ML ]</text>
+            <rect x="20" y="33" width="470" height="24" rx="5" fill="#fef9c3" stroke="#111827"/><text x="255" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Ingestion: [ Sqoop (RDBMS <-> HDFS) ]   [ Flume (Live Logs) ]</text>
+            <rect x="20" y="62" width="470" height="24" rx="5" fill="#dbeafe" stroke="#111827"/><text x="255" y="79" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Processing & YARN: [ MapReduce ] + [ Spark ] + [ YARN Manager ]</text>
+            <rect x="20" y="91" width="470" height="24" rx="5" fill="#dcfce7" stroke="#111827"/><text x="255" y="108" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Storage: [ HDFS (128 MB Blocks) ]   [ HBase (NoSQL) ]</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Complete end-to-end toolkit (SQL, NoSQL, Streaming, ML) on one shared cluster.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Managing & configuring 8–10 different ecosystem tools requires skilled admins.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> The Hadoop Ecosystem transforms core HDFS + YARN into a versatile enterprise Big Data platform.</div>
+      </div>
+
+      <!-- PAGE 10 -->
+      <div class="page ruled-paper" data-idx="11">
+        <div class="nb-top"><span class="unit-pill">Unit 2.3: HDFS Architecture</span><span class="page-stamp">Page: 10</span></div>
+        <div class="q-black">Q. What is HDFS? Explain NameNode and DataNode Roles. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>HDFS (Hadoop Distributed File System)</strong> is Hadoop's storage layer that splits massive files into <span class="hl-y">128 MB blocks</span> and stores them across clusters in a <strong>Master-Slave</strong> architecture.</div>
+        <p class="ans-blue"><strong>Key Rule (WORM):</strong> HDFS follows <em>Write-Once, Read-Many</em> for super-fast high-throughput reads. <em>Real Ex:</em> Storing 50 TB of CCTV / satellite footage across 100 servers.</p>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>NameNode (Master)</th><th>DataNode (Slave / Worker)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Primary Job</strong></td><td>Stores <strong>Metadata</strong> (File names, block locations)</td><td>Stores <strong>actual 128 MB data blocks</strong></td></tr>
+            <tr><td><strong>Memory</strong></td><td>Stored in <strong>RAM</strong> (fast lookup)</td><td>Stored on <strong>Hard Disks</strong></td></tr>
+            <tr><td><strong>Key Files</strong></td><td><code>FsImage</code> (snapshot) + <code>EditLogs</code> (log)</td><td>Raw block files + Checksums</td></tr>
+            <tr><td><strong>Signal</strong></td><td>Receives heartbeats & assigns tasks</td><td>Sends <strong>Heartbeat every 3 seconds</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D HDFS Architecture Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="106" viewBox="0 0 510 106">
+            <rect x="170" y="4" width="170" height="34" rx="7" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="255" y="25" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111827">NameNode (Master)</text>
+            <line x1="210" y1="38" x2="115" y2="66" stroke="#dc2626" stroke-width="1.6"/><line x1="255" y1="38" x2="255" y2="66" stroke="#dc2626" stroke-width="1.6"/><line x1="300" y1="38" x2="395" y2="66" stroke="#dc2626" stroke-width="1.6"/>
+            <rect x="5" y="66" width="65" height="30" rx="5" fill="#fce7f3" stroke="#be185d"/><text x="37" y="85" text-anchor="middle" font-size="11" fill="#111827">Client</text>
+            <line x1="70" y1="81" x2="90" y2="81" stroke="#1d4ed8" stroke-width="1.8"/>
+            <rect x="90" y="66" width="105" height="30" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="142" y="85" text-anchor="middle" font-size="11.5" fill="#111827">DN1 [B1][B2]</text>
+            <rect x="210" y="66" width="105" height="30" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="262" y="85" text-anchor="middle" font-size="11.5" fill="#111827">DN2 [B1][B3]</text>
+            <rect x="330" y="66" width="105" height="30" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="382" y="85" text-anchor="middle" font-size="11.5" fill="#111827">DN3 [B2][B3]</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Stores petabytes cheaply, fast streaming reads, hardware failure safe.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Not suitable for millions of tiny (&lt;1 MB) files (exhausts NameNode RAM).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Separating Metadata (NameNode) from raw blocks (DataNodes) enables massive scalable storage.</div>
+      </div>
+
+      <!-- PAGE 11 -->
+      <div class="page ruled-paper" data-idx="12">
+        <div class="nb-top"><span class="unit-pill">Unit 2.3: Replication & Rack Awareness</span><span class="page-stamp">Page: 11</span></div>
+        <div class="q-black">Q. Explain Storing, Replication & Rack Awareness in HDFS. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>HDFS Replication</strong> automatically creates multiple copies (<span class="hl-y">Default Replication Factor = 3</span>) of every block across nodes and racks so data is never lost.</div>
+        <div class="h-black">Step-by-Step Storing Process (Real Numerical Example):</div>
+        <ol>
+          <li><strong>File Splitting:</strong> Suppose Amit uploads a <strong>300 MB</strong> dataset. With 128 MB block size, HDFS splits it into 3 blocks: <code>B1 (128 MB)</code>, <code>B2 (128 MB)</code>, and <code>B3 (44 MB)</code>.</li>
+          <li><strong>NameNode Lookup:</strong> Client asks NameNode where to write; NameNode picks 3 DataNodes.</li>
+          <li><strong>Write Pipeline:</strong> Client writes <code>B1</code> to <strong>DN1</strong> → DN1 copies to <strong>DN2</strong> → DN2 copies to <strong>DN3</strong>.</li>
+          <li><strong>Rack Awareness Policy:</strong>
+            <ul>
+              <li><strong>Copy 1:</strong> Local node on <strong>Rack 1</strong>.</li>
+              <li><strong>Copy 2:</strong> Different rack (<strong>Rack 2</strong>) → protects against entire rack power failure!</li>
+              <li><strong>Copy 3:</strong> Another node on <strong>Rack 2</strong> → saves cross-rack network bandwidth.</li>
+            </ul>
+          </li>
+        </ol>
+        <div class="h-black">2D Replication & Rack Awareness Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="530" height="88" viewBox="0 0 530 88">
+            <rect x="8" y="24" width="90" height="36" rx="6" fill="#fef9c3" stroke="#111827"/><text x="53" y="46" text-anchor="middle" font-size="11.5" fill="#111827">Client [B1]</text>
+            <text x="104" y="47" font-size="15" fill="#dc2626">→</text>
+            <rect x="122" y="16" width="115" height="52" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="179" y="37" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Rack 1: DN1</text><text x="179" y="55" text-anchor="middle" font-size="11" fill="#1e40af">(Copy 1 of B1)</text>
+            <text x="243" y="47" font-size="15" fill="#dc2626">→</text>
+            <rect x="262" y="16" width="115" height="52" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="319" y="37" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Rack 2: DN2</text><text x="319" y="55" text-anchor="middle" font-size="11" fill="#166534">(Copy 2 of B1)</text>
+            <text x="383" y="47" font-size="15" fill="#dc2626">→</text>
+            <rect x="402" y="16" width="115" height="52" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="459" y="37" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Rack 2: DN3</text><text x="459" y="55" text-anchor="middle" font-size="11" fill="#166534">(Copy 3 of B1)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Survives full rack failure & enables fast parallel reads from nearest copy.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> 3x replication consumes 3x raw disk space (300 MB file uses 900 MB).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Rack-aware pipelined replication guarantees both high availability and low network congestion.</div>
+      </div>
+
+      <!-- PAGE 12 -->
+      <div class="page ruled-paper" data-idx="13">
+        <div class="nb-top"><span class="unit-pill">Unit 2.3: Fault Tolerance & Recovery</span><span class="page-stamp">Page: 12</span></div>
+        <div class="q-black">Q. Explain Fault Tolerance and Data Recovery Mechanisms in HDFS. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Fault Tolerance</strong> is HDFS's self-healing ability to <span class="hl-y">keep running without data loss</span> even when hard disks, DataNodes, or racks fail.</div>
+        <div class="h-black">5 Core Fault Tolerance & Recovery Steps:</div>
+        <ol>
+          <li><strong>Heartbeat (Every 3 sec):</strong> Each DataNode sends a live Heartbeat signal every 3s to NameNode.</li>
+          <li><strong>Dead Node Detection (10 min):</strong> Missing heartbeats for 10 min → NameNode marks DataNode <strong>DEAD</strong>.</li>
+          <li><strong>Automatic Re-Replication:</strong> NameNode detects blocks with &lt;3 copies and orders healthy nodes to copy them to another healthy DataNode.</li>
+          <li><strong>Checksum Verification:</strong> Detects silent disk corruption during reads and fetches a clean copy automatically.</li>
+          <li><strong>Secondary NameNode & Safe Mode:</strong> Merges <code>FsImage + EditLogs</code> regularly; checks 99.9% blocks on startup.</li>
+        </ol>
+        <div class="h-black">2D Crash & Recovery Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="122" viewBox="0 0 520 122">
+            <text x="10" y="22" font-size="12" font-weight="700" fill="#111827">1. Normal:</text>
+            <rect x="105" y="6" width="95" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="152" y="22" text-anchor="middle" font-size="11.5" fill="#111827">DN1 [B1]</text>
+            <rect x="225" y="6" width="95" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="272" y="22" text-anchor="middle" font-size="11.5" fill="#111827">DN2 [B1]</text>
+            <rect x="345" y="6" width="95" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="392" y="22" text-anchor="middle" font-size="11.5" fill="#111827">DN3 [B1]</text>
+            <text x="10" y="62" font-size="12" font-weight="700" fill="#dc2626">2. Crash!:</text>
+            <rect x="225" y="44" width="95" height="26" rx="5" fill="#fef2f2" stroke="#dc2626" stroke-dasharray="4"/><text x="272" y="61" text-anchor="middle" font-size="11.5" font-weight="700" fill="#dc2626">DN2 DEAD ✖</text>
+            <text x="10" y="102" font-size="12" font-weight="700" fill="#15803d">3. Recovery:</text>
+            <rect x="105" y="84" width="95" height="26" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="152" y="101" text-anchor="middle" font-size="11.5" fill="#111827">DN1 [B1]</text>
+            <line x1="200" y1="97" x2="345" y2="97" stroke="#dc2626" stroke-width="2"/><text x="272" y="91" text-anchor="middle" font-size="11" fill="#dc2626">Copy [B1] →</text>
+            <rect x="345" y="84" width="120" height="26" rx="5" fill="#fef08a" stroke="#111827"/><text x="405" y="101" text-anchor="middle" font-size="11.5" fill="#111827">DN4 [B1] (3x Safe!)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Automatic zero-downtime self-healing; protects against disk corruption.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Re-replicating huge failed nodes temporarily consumes heavy cluster network bandwidth.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Heartbeats, checksums, and auto re-replication ensure 99.99% data durability in HDFS clusters.</div>
+      </div>
+
+      <!-- PAGE 13 -->
+      <div class="page ruled-paper" data-idx="14">
+        <div class="nb-top"><span class="unit-pill">Unit 2.4: Hadoop Architecture (YARN)</span><span class="page-stamp">Page: 13</span></div>
+        <div class="q-black">Q. Explain Hadoop Architecture & Compare Hadoop 1.0 vs. 2.0/3.0. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Hadoop Architecture</strong> is a layered Master-Slave framework integrating <span class="hl-y">HDFS (Storage)</span>, <span class="hl-g">YARN (Resource Mgmt)</span>, and <strong>MapReduce (Processing)</strong>.</div>
+        <div class="h-black">YARN Components (Yet Another Resource Negotiator):</div>
+        <ul>
+          <li><strong>ResourceManager (Master):</strong> Global scheduler allocating CPU & RAM across all cluster apps.</li>
+          <li><strong>NodeManager (Slave):</strong> Runs on every worker PC, manages <strong>Containers</strong> & reports health.</li>
+          <li><strong>ApplicationMaster:</strong> Created per job to negotiate containers and monitor execution.</li>
+        </ul>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Hadoop 1.0</th><th>Hadoop 2.0 / 3.0</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Resource Mgr</strong></td><td>JobTracker (Single bottleneck)</td><td><span class="hl-y">YARN (RM + AppMaster)</span></td></tr>
+            <tr><td><strong>Engines</strong></td><td>Only MapReduce (Batch)</td><td>Batch + Streaming + Graph (Spark, Tez)</td></tr>
+            <tr><td><strong>NameNode HA</strong></td><td>Single Point of Failure</td><td><strong>High Availability (Active + Standby)</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Hadoop Architecture Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="500" height="106" viewBox="0 0 500 106">
+            <rect x="20" y="5" width="460" height="26" rx="5" fill="#fce7f3" stroke="#111827"/><text x="250" y="23" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Processing: [ MapReduce ]   [ Apache Spark ]   [ Hive / Pig ]</text>
+            <rect x="20" y="38" width="460" height="28" rx="5" fill="#fef08a" stroke="#111827"/><text x="250" y="57" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">YARN: [ResourceManager] → [NodeManager + Containers]</text>
+            <rect x="20" y="73" width="460" height="26" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="250" y="91" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">HDFS: [NameNode (Master)] → [DataNode 1] [DataNode 2]</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> YARN runs Spark, Hive & MapReduce simultaneously on shared cluster hardware.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Multiple master/slave daemons increase cluster tuning complexity.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Introducing YARN turned Hadoop from a single-purpose batch tool into a multi-engine Big Data OS.</div>
+      </div>
+
+      <!-- PAGE 14 -->
+      <div class="page ruled-paper" data-idx="15">
+        <div class="nb-top"><span class="unit-pill">Unit 2.5: MapReduce Phases</span><span class="page-stamp">Page: 14</span></div>
+        <div class="q-black">Q. What is MapReduce? Explain All Phases with WordCount Example. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>MapReduce</strong> is a parallel programming model that processes huge datasets in two core steps: <span class="hl-y">Map()</span> (filter/split) and <span class="hl-g">Reduce()</span> (aggregate/count).</div>
+        <div class="h-black">6 Phases of MapReduce:</div>
+        <ol>
+          <li><strong>Input Splits:</strong> Divides large file into 128 MB logical chunks.</li>
+          <li><strong>RecordReader:</strong> Converts splits into <code>&lt;Key, Value&gt;</code> pairs (e.g., line text).</li>
+          <li><strong>Map Phase:</strong> Mapper outputs intermediate <code>&lt;Word, 1&gt;</code> pairs.</li>
+          <li><strong>Shuffle & Sort:</strong> Groups values by identical key & sorts keys alphabetically.</li>
+          <li><strong>Reduce Phase:</strong> Sums grouped values to produce final totals.</li>
+          <li><strong>OutputFormat:</strong> Saves final <code>&lt;Key, Value&gt;</code> output permanently into <strong>HDFS</strong>.</li>
+        </ol>
+        <div class="h-black">2D WordCount Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="530" height="86" viewBox="0 0 530 86">
+            <rect x="6" y="10" width="95" height="62" rx="6" fill="#fef9c3" stroke="#111827"/><text x="53" y="34" text-anchor="middle" font-size="11.5" fill="#111827">"Big Data"</text><text x="53" y="54" text-anchor="middle" font-size="11.5" fill="#111827">"Big AI"</text>
+            <text x="107" y="45" font-size="15" fill="#dc2626">→</text>
+            <rect x="125" y="10" width="115" height="62" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="182" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">MAP</text><text x="182" y="54" text-anchor="middle" font-size="10.5" fill="#1e40af">(Big,1)(Data,1)...</text>
+            <text x="246" y="45" font-size="15" fill="#dc2626">→</text>
+            <rect x="264" y="10" width="120" height="62" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="324" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">SHUFFLE/SORT</text><text x="324" y="54" text-anchor="middle" font-size="10.5" fill="#9d174d">(Big, [1,1])</text>
+            <text x="390" y="45" font-size="15" fill="#dc2626">→</text>
+            <rect x="408" y="10" width="114" height="62" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="465" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">REDUCE</text><text x="465" y="54" text-anchor="middle" font-size="10.5" fill="#166534">(Big,2) (AI,1)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Simple parallel code, auto fault recovery, scales to petabytes.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Writes intermediate results to disk → slower than Spark for iterative ML.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> MapReduce simplifies distributed computing by automating splitting, shuffling, and failure recovery.</div>
+      </div>
+
+      <!-- PAGE 15 -->
+      <div class="page ruled-paper" data-idx="16">
+        <div class="nb-top"><span class="unit-pill">Unit 2.5: Mapper/Reducer & Anatomy</span><span class="page-stamp">Page: 15</span></div>
+        <div class="q-black">Q. Compare Mapper vs. Reducer & Explain MapReduce Job Anatomy. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>MapReduce Anatomy</strong> explains how a client job flows through ResourceManager, ApplicationMaster, HDFS, and NodeManager Containers.</div>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Mapper Phase</th><th>Reducer Phase</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Input / Output</strong></td><td>Raw splits → Temp <code>&lt;K2, V2&gt;</code></td><td>Sorted groups → Final <code>&lt;K3, V3&gt;</code></td></tr>
+            <tr><td><strong>Storage & Task</strong></td><td>Local Disk; Filtering & Mapping</td><td><strong>HDFS</strong>; Aggregation & Counting</td></tr>
+          </tbody>
+        </table>
+        <p class="ans-blue"><strong>Helpers:</strong> <strong>Combiner</strong> = mini-reducer on Mapper node (cuts network load) | <strong>Partitioner</strong> = routes keys via <code>hash(key) % numReducers</code>.</p>
+        <div class="h-black">6-Step Job Anatomy:</div>
+        <p class="ans-blue">1) Client copies JAR to HDFS → 2) ResourceManager launches <strong>ApplicationMaster (AM)</strong> → 3) AM requests Containers (Data Locality) → 4) NodeManagers execute Map/Reduce → 5) Progress sent every 3s → 6) Final output written to HDFS.</p>
+        <div class="svg-wrap">
+          <svg width="520" height="82" viewBox="0 0 520 82">
+            <rect x="8" y="10" width="90" height="30" rx="5" fill="#fef9c3" stroke="#111827"/><text x="53" y="30" text-anchor="middle" font-size="11.5" fill="#111827">1. Client</text>
+            <text x="104" y="29" font-size="14" fill="#dc2626">→</text>
+            <rect x="122" y="10" width="135" height="30" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="189" y="30" text-anchor="middle" font-size="11.5" fill="#111827">2. ResourceManager</text>
+            <text x="263" y="29" font-size="14" fill="#dc2626">→</text>
+            <rect x="282" y="10" width="145" height="30" rx="5" fill="#fce7f3" stroke="#be185d"/><text x="354" y="30" text-anchor="middle" font-size="11.5" fill="#111827">3. ApplicationMaster</text>
+            <rect x="170" y="48" width="180" height="28" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="260" y="67" text-anchor="middle" font-size="11.5" fill="#111827">4. Map & Reduce Containers</text>
+            <line x1="354" y1="40" x2="290" y2="48" stroke="#dc2626" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Data locality minimizes network traffic; failed tasks auto-retry.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Container/JVM startup overhead causes high latency for small jobs.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> YARN's ApplicationMaster cleanly orchestrates MapReduce tasks with built-in fault tolerance.</div>
+      </div>
+
+      <!-- PAGE 16 -->
+      <div class="page ruled-paper" data-idx="17">
+        <div class="nb-top"><span class="unit-pill">Unit 3.1: Introduction to NoSQL</span><span class="page-stamp">Page: 16</span></div>
+        <div class="q-black">Q. What is NoSQL? Explain its Characteristics and Applications. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>NoSQL ("Not Only SQL")</strong> refers to <span class="hl-y">non-relational, distributed databases</span> built to store unstructured & semi-structured data without a rigid table schema.</div>
+        <div class="h-black">Key Characteristics & Real-Life Applications:</div>
+        <ul>
+          <li><strong>Schema-Free:</strong> Store records with varying fields in one collection (no <code>ALTER TABLE</code>).</li>
+          <li><strong>Horizontal Scaling:</strong> Cheaply scales across hundreds of commodity servers.</li>
+          <li><strong>BASE Model:</strong> <em>Basically Available, Soft state, Eventual consistency</em> (optimized for speed).</li>
+          <li><strong>Applications:</strong> 1) <strong>E-Commerce:</strong> Amazon catalogs | 2) <strong>Social Media:</strong> Instagram feeds & chats | 3) <strong>IoT:</strong> Live sensor telemetry | 4) <strong>Gaming:</strong> Fast leaderboards.</li>
+        </ul>
+        <div class="h-black">2D NoSQL Overview Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="76" viewBox="0 0 510 76">
+            <rect x="10" y="14" width="120" height="46" rx="7" fill="#dbeafe" stroke="#1d4ed8"/><text x="70" y="34" text-anchor="middle" font-size="11.5" fill="#111827">Apps / IoT</text><text x="70" y="51" text-anchor="middle" font-size="10.5" fill="#1e40af">(Mixed Data)</text>
+            <text x="138" y="42" font-size="16" fill="#dc2626">→</text>
+            <rect x="158" y="10" width="336" height="54" rx="8" fill="#fef9c3" stroke="#111827" stroke-width="1.8"/>
+            <text x="326" y="30" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111827">NoSQL Database (Schema-Free + BASE)</text>
+            <text x="326" y="51" text-anchor="middle" font-size="11.5" fill="#1e40af">[Document]  [Key-Value]  [Column]  [Graph]</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Handles messy JSON/logs easily, fast read/write, scales out cheaply.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Lacks strict ACID transactions & universal SQL query standard.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> NoSQL solves the schema rigidity and scaling bottlenecks of traditional relational databases.</div>
+      </div>
+
+      <!-- PAGE 17 -->
+      <div class="page ruled-paper" data-idx="18">
+        <div class="nb-top"><span class="unit-pill">Unit 3.2: NoSQL (Document & Key-Value)</span><span class="page-stamp">Page: 17</span></div>
+        <div class="q-black">Q. Explain Document-Based and Key-Value NoSQL Databases. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Document</strong> and <strong>Key-Value</strong> databases are schema-less NoSQL stores designed for flexible JSON objects and ultra-fast key lookups.</div>
+        <div class="h-black">1. Document-Based Databases:</div>
+        <p class="ans-blue">Stores data as semi-structured <strong>JSON / BSON documents</strong> inside collections. Supports nested objects & arrays. <em>Examples:</em> <strong>MongoDB, CouchDB</strong>. <em>Real Ex:</em> E-commerce product catalogs & student profiles.</p>
+        <div class="h-black">2. Key-Value Stores:</div>
+        <p class="ans-blue">Simplest model storing data as unique <strong>Key → Value pairs</strong> (like a Python dictionary). <em>Examples:</em> <strong>Redis, Amazon DynamoDB</strong>. <em>Real Ex:</em> Shopping carts, login sessions & caching.</p>
+        <div class="h-black">2D Diagrams (Document vs. Key-Value):</div>
+        <div class="svg-wrap">
+          <svg width="530" height="92" viewBox="0 0 530 92">
+            <rect x="8" y="8" width="248" height="76" rx="8" fill="#eff6ff" stroke="#1d4ed8"/>
+            <text x="132" y="26" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Document DB (MongoDB)</text>
+            <text x="24" y="45" font-size="11.5" fill="#1e40af">{ "roll": 49, "name": "Amit",</text>
+            <text x="24" y="64" font-size="11.5" fill="#1e40af">  "skills": ["AI", "Big Data"] }</text>
+            <rect x="274" y="8" width="248" height="76" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+            <text x="398" y="26" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Key-Value Store (Redis)</text>
+            <text x="398" y="48" text-anchor="middle" font-size="11.5" fill="#1e40af">"user:49"  --->  "Amit (Online)"</text>
+            <text x="398" y="68" text-anchor="middle" font-size="11.5" fill="#1e40af">"cart:49"  --->  "[Book, Pen]"</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> $O(1)$ blazing-fast Key-Value speed; zero downtime schema edits in Document DBs.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Key-Value cannot filter by value easily; Document DBs struggle with heavy multi-joins.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Use Document DBs for rich application records and Key-Value stores for ultra-fast caching & sessions.</div>
+      </div>
+
+      <!-- PAGE 18 -->
+      <div class="page ruled-paper" data-idx="19">
+        <div class="nb-top"><span class="unit-pill">Unit 3.2: NoSQL (Column & Graph)</span><span class="page-stamp">Page: 18</span></div>
+        <div class="q-black">Q. Explain Column-Oriented & Graph DBs + Compare All 4 NoSQL Types. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Column-Oriented DBs</strong> store data in column families for high-speed analytical writes, while <strong>Graph DBs</strong> store entities as <strong>Nodes</strong> and relationships as <strong>Edges</strong>.</div>
+        <ul>
+          <li><strong>3. Column-Oriented (Cassandra, HBase):</strong> Built for massive time-series & IoT sensor write throughput.</li>
+          <li><strong>4. Graph-Based (Neo4j, Neptune):</strong> Traverses deep social networks ("friends-of-friends") & fraud rings in ms.</li>
+        </ul>
+        <table class="hw-table">
+          <thead><tr><th>Type</th><th>Model</th><th>Examples</th><th>Best Use Case</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Document</strong></td><td>JSON / BSON</td><td>MongoDB</td><td>Web apps, product catalogs</td></tr>
+            <tr><td><strong>Key-Value</strong></td><td>Key → Value</td><td>Redis, DynamoDB</td><td>Caching, carts, sessions</td></tr>
+            <tr><td><strong>Column</strong></td><td>Column Families</td><td>Cassandra, HBase</td><td>IoT logs, telecom records</td></tr>
+            <tr><td><strong>Graph</strong></td><td>Nodes & Edges</td><td>Neo4j</td><td>Social networks, fraud detection</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Diagrams (Column vs. Graph):</div>
+        <div class="svg-wrap">
+          <svg width="530" height="72" viewBox="0 0 530 72">
+            <rect x="8" y="6" width="248" height="58" rx="7" fill="#dcfce7" stroke="#15803d"/>
+            <text x="132" y="24" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Column DB (Cassandra)</text>
+            <text x="132" y="46" text-anchor="middle" font-size="11.5" fill="#166534">Key:49 | Name:Amit | Sem:5th</text>
+            <rect x="274" y="6" width="248" height="58" rx="7" fill="#fce7f3" stroke="#be185d"/>
+            <text x="398" y="22" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Graph DB (Neo4j)</text>
+            <circle cx="330" cy="45" r="14" fill="#fff" stroke="#111827"/><text x="330" y="49" text-anchor="middle" font-size="10" fill="#111827">Amit</text>
+            <line x1="344" y1="45" x2="432" y2="45" stroke="#dc2626" stroke-width="1.6"/><text x="388" y="40" text-anchor="middle" font-size="10" fill="#dc2626">FRIEND</text>
+            <circle cx="446" cy="45" r="14" fill="#fff" stroke="#111827"/><text x="446" y="49" text-anchor="middle" font-size="10" fill="#111827">Rahul</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Column DBs ingest millions of logs/sec; Graph DBs solve deep link queries instantly.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Graph DBs scale horizontally poorly; Column DBs are tough for ad-hoc queries.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Each of the 4 NoSQL models excels at a specific workload—documents, pairs, logs, or connected graphs.</div>
+      </div>
+
+      <!-- PAGE 19 -->
+      <div class="page ruled-paper" data-idx="20">
+        <div class="nb-top"><span class="unit-pill">Unit 3.3 & 3.4: NoSQL Advantages & Industry</span><span class="page-stamp">Page: 19</span></div>
+        <div class="q-black">Q. Explain Advantages of NoSQL & Real-World Industry Use Cases. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Industry Adoption of NoSQL</strong> showcases how global giants serve crores of concurrent users with high speed and zero downtime.</div>
+        <div class="h-black">Unit 3.4 — Real Company Case Studies:</div>
+        <table class="hw-table">
+          <thead><tr><th>Company</th><th>NoSQL DB</th><th>Real-Life Use Case</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Netflix</strong></td><td><strong>Cassandra</strong></td><td>Saves global viewing history & resume timestamps for crores of users.</td></tr>
+            <tr><td><strong>Amazon</strong></td><td><strong>DynamoDB</strong></td><td>Handles millions of fast shopping carts during Prime Day sales.</td></tr>
+            <tr><td><strong>Uber</strong></td><td><strong>Redis + Cassandra</strong></td><td>Live cab GPS tracking, ride matching & surge pricing in seconds.</td></tr>
+            <tr><td><strong>Facebook</strong></td><td><strong>HBase</strong></td><td>Stores billions of Messenger chats and real-time user feeds.</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Industry Flow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="72" viewBox="0 0 520 72">
+            <rect x="10" y="14" width="150" height="44" rx="7" fill="#fef2f2" stroke="#dc2626"/><text x="85" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Netflix → Cassandra</text><text x="85" y="50" text-anchor="middle" font-size="10.5" fill="#991b1b">(Video History)</text>
+            <rect x="185" y="14" width="150" height="44" rx="7" fill="#fef9c3" stroke="#ca8a04"/><text x="260" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Amazon → DynamoDB</text><text x="260" y="50" text-anchor="middle" font-size="10.5" fill="#854d0e">(Shopping Carts)</text>
+            <rect x="360" y="14" width="150" height="44" rx="7" fill="#dcfce7" stroke="#15803d"/><text x="435" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">Uber → Redis</text><text x="435" y="50" text-anchor="middle" font-size="10.5" fill="#166534">(Live Cab GPS)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages (Unit 3.3):</strong> Flexible schema, elastic horizontal scaling, blazing read/write throughput.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Eventual consistency (not strict ACID), weak joins, no single query standard.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Tech giants rely on NoSQL because traditional SQL cannot match its global low-latency scale.</div>
+      </div>
+
+      <!-- PAGE 20 -->
+      <div class="page ruled-paper" data-idx="21">
+        <div class="nb-top"><span class="unit-pill">Unit 3.5 - 3.7: SQL vs NoSQL vs NewSQL</span><span class="page-stamp">Page: 20</span></div>
+        <div class="q-black">Q. Compare SQL vs. NoSQL and Explain the Concept of NewSQL. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>NewSQL</strong> is a modern relational database combining <span class="hl-y">ACID safety & SQL</span> of RDBMS with the <span class="hl-g">Horizontal Scaling</span> of NoSQL. <em>Ex:</em> Google Spanner, CockroachDB, VoltDB.</div>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>SQL (MySQL)</th><th>NoSQL (MongoDB)</th><th>NewSQL (Spanner)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Data Model</strong></td><td>Fixed Tables</td><td>Doc / KV / Col / Graph</td><td><strong>Fixed Relational Tables</strong></td></tr>
+            <tr><td><strong>Schema</strong></td><td>Static / Fixed</td><td>Dynamic / Schema-Free</td><td>Static / Relational</td></tr>
+            <tr><td><strong>Consistency</strong></td><td><strong>ACID</strong></td><td><strong>BASE</strong> (Eventual)</td><td><strong>ACID</strong></td></tr>
+            <tr><td><strong>Scaling</strong></td><td>Vertical (1 PC)</td><td><strong>Horizontal (Cluster)</strong></td><td><strong>Horizontal (Global)</strong></td></tr>
+            <tr><td><strong>Best For</strong></td><td>College ERP, Banks</td><td>Social Media, IoT</td><td><strong>Global FinTech & Banking</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Concept Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="62" viewBox="0 0 510 62">
+            <rect x="8" y="12" width="150" height="36" rx="7" fill="#dbeafe" stroke="#1d4ed8"/><text x="83" y="35" text-anchor="middle" font-size="11.5" fill="#111827">SQL (ACID + Tables)</text>
+            <text x="166" y="36" font-size="18" font-weight="700" fill="#dc2626">+</text>
+            <rect x="186" y="12" width="150" height="36" rx="7" fill="#dcfce7" stroke="#15803d"/><text x="261" y="35" text-anchor="middle" font-size="11.5" fill="#111827">NoSQL (Scale-Out)</text>
+            <text x="344" y="36" font-size="18" font-weight="700" fill="#dc2626">=</text>
+            <rect x="366" y="12" width="132" height="36" rx="7" fill="#fef08a" stroke="#111827" stroke-width="2"/><text x="432" y="35" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111827">NewSQL!</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages (NewSQL):</strong> Standard SQL queries + zero-loss ACID + global horizontal scaling.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Network consensus overhead (Paxos/Raft); still requires structured tables.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> NewSQL bridges SQL and NoSQL, giving global banking apps both ACID safety and massive scale.</div>
+      </div>
+
+      <!-- PAGE 21 -->
+      <div class="page ruled-paper" data-idx="22">
+        <div class="nb-top"><span class="unit-pill">Unit 3 (Lab): Engineering Indexing</span><span class="page-stamp">Page: 21</span></div>
+        <div class="q-black">Q. What is Indexing? Write Hands-On Indexing Exercises for Engineering Data. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> An <strong>Index</strong> is a <span class="hl-y">B-Tree lookup structure</span> (like a book's index) that cuts query search time from <span class="hl-p">O(N) Full Scan</span> to <span class="hl-g">O(log N)</span>!</div>
+        <div class="h-black">Hands-On Commands (Machine Sensor Collection):</div>
+        <div class="code-box">// MongoDB: Single-Field, Compound, Unique & Management
+db.machine_logs.createIndex({ machine_id: 1 })
+db.machine_logs.createIndex({ machine_id: 1, timestamp: -1 })
+db.machine_logs.createIndex({ sensor_serial: 1 }, { unique: true })
+db.machine_logs.find({ machine_id: "M-101" }).explain("executionStats") // IXSCAN
+db.machine_logs.getIndexes()                   // List all indexes
+db.machine_logs.dropIndex("machine_id_1")      // Remove unused index
+
+-- SQL Equivalent Index:
+CREATE INDEX idx_machine_time ON machine_logs (machine_id, timestamp DESC);</div>
+        <div class="h-black">2D Lookup Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="68" viewBox="0 0 510 68">
+            <text x="12" y="24" font-size="12" fill="#dc2626">Without Index O(N):   [Row1] → [Row2] → [Row3] → ... → [Row 10,00,000] (Slow!)</text>
+            <text x="12" y="52" font-size="12" font-weight="700" fill="#15803d">With Index O(log N):  [B-Tree Index] ===(Direct Jump)===> [Target Row!] (Fast!)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Cuts search time from seconds to milliseconds; speeds up sorting.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Uses extra RAM/disk and slightly slows down INSERT/UPDATE writes.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Creating indexes on frequently queried engineering fields dramatically boosts database read speed.</div>
+      </div>
+
+      <!-- PAGE 22 -->
+      <div class="page ruled-paper" data-idx="23">
+        <div class="nb-top"><span class="unit-pill">Unit 3 (Lab): EDA in Python</span><span class="page-stamp">Page: 22</span></div>
+        <div class="q-black">Q. What is EDA? Perform Exploratory Data Analysis in Python on Engineering Data. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>EDA (Exploratory Data Analysis)</strong> is the process of <span class="hl-y">summarizing, cleaning, and visualizing data</span> in Python to discover patterns and outliers before ML training.</div>
+        <div class="code-box">import pandas as pd, matplotlib.pyplot as plt
+df = pd.read_csv("machine_data.csv")  # Attrs: Machine_ID, Temp_C, RPM, Vibration, Status
+print(df.describe())                  # Mean, Min, Max, Std Dev
+print(df.isnull().sum())              # Check missing values
+print(df[["Temp_C", "RPM", "Vibration"]].corr())  # Correlation Matrix
+plt.scatter(df["Temp_C"], df["Vibration"], color="blue")
+plt.xlabel("Temp (C)"); plt.ylabel("Vibration (mm/s)"); plt.show()</div>
+        <p class="ans-blue"><strong>Finding:</strong> Machines with <code>Temp_C &gt; 90°C</code> &amp; <code>Vibration &gt; 4.5</code> strongly correlate with <strong>Fault</strong> status!</p>
+        <div class="h-black">2D Scatter Plot Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="420" height="86" viewBox="0 0 420 86">
+            <line x1="50" y1="72" x2="380" y2="72" stroke="#111827" stroke-width="2"/><line x1="50" y1="72" x2="50" y2="8" stroke="#111827" stroke-width="2"/>
+            <text x="215" y="84" text-anchor="middle" font-size="11" fill="#111827">Temperature (°C) →</text>
+            <circle cx="95" cy="58" r="4" fill="#16a34a"/><circle cx="130" cy="52" r="4" fill="#16a34a"/><text x="140" y="45" font-size="11" fill="#15803d">Normal</text>
+            <circle cx="290" cy="22" r="5" fill="#dc2626"/><circle cx="330" cy="16" r="5" fill="#dc2626"/><text x="305" y="38" font-size="11" font-weight="700" fill="#dc2626">Fault! (High Temp)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Catches dirty data/outliers early; reveals useful features; boosts ML accuracy.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Time-consuming on huge datasets; 2D plots cannot visualize 100+ features at once.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> EDA in Python turns raw engineering tables into clear visual insights before building predictive models.</div>
+      </div>
+
+      <!-- PAGE 23 -->
+      <div class="page ruled-paper" data-idx="24">
+        <div class="nb-top"><span class="unit-pill">Unit 3 (Theory): Functional Dependency</span><span class="page-stamp">Page: 23</span></div>
+        <div class="q-black">Q. Define Functional Dependency, Trivial/Non-Trivial FD & Closure (F⁺, X⁺). (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> A <strong>Functional Dependency (X → Y)</strong> means attribute <span class="hl-y">X (Determinant) uniquely decides Y (Dependent)</span> in a relation R. <em>Ex:</em> <code>Roll_No → Name</code>.</div>
+        <table class="hw-table">
+          <thead><tr><th>FD Type</th><th>Rule</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1. Trivial FD</strong></td><td><code>Y ⊆ X</code> (Y is subset of X)</td><td><code>{Roll_No, Name} → Name</code></td></tr>
+            <tr><td><strong>2. Non-Trivial FD</strong></td><td><code>Y ⊈ X</code> (Y not inside X)</td><td><code>Roll_No → Course</code></td></tr>
+            <tr><td><strong>3. Completely Non-Trivial</strong></td><td><code>X ∩ Y = ∅</code> (No common attr)</td><td><code>Emp_ID → Salary</code></td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">Closure of FD Set (F⁺) & Attribute Closure (X⁺):</div>
+        <ul>
+          <li><strong>F⁺ (FD Closure):</strong> All FDs derivable from F using <strong>Armstrong's Axioms</strong>: 1) Reflexivity (<code>Y⊆X ⇒ X→Y</code>), 2) Augmentation (<code>X→Y ⇒ XZ→YZ</code>), 3) Transitivity (<code>X→Y, Y→Z ⇒ X→Z</code>).</li>
+          <li><strong>X⁺ (Attribute Closure):</strong> All attributes decided by X (finds <strong>Candidate Keys</strong>).</li>
+          <li><strong>Solved Ex:</strong> Given <code>R(A,B,C,D)</code>, <code>F={A→B, B→C, C→D}</code>. Find <span class="hl-y">A⁺</span>: <code>{A} → {A,B} → {A,B,C} → {A,B,C,D}=R</code> ⇒ <span class="hl-g">A is Candidate Key!</span></li>
+        </ul>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Eliminates duplicate data & update anomalies during DB normalization.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Over-normalization splits tables excessively, requiring slower SQL JOINs.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Functional Dependency & Closure mathematically guarantee clean, redundancy-free relational database design.</div>
+      </div>
+
+      <!-- PAGE 24 -->
+      <div class="page ruled-paper" data-idx="25">
+        <div class="nb-top"><span class="unit-pill">Unit 4.1: Introduction to MongoDB</span><span class="page-stamp">Page: 24</span></div>
+        <div class="q-black">Q. What is MongoDB? Compare MongoDB with Traditional RDBMS. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>MongoDB</strong> is an <span class="hl-y">open-source, document-oriented NoSQL database</span> that stores data in flexible JSON-like documents called <strong>BSON</strong> instead of fixed tables.</div>
+        <p class="ans-blue"><strong>Real Example:</strong> On Flipkart, a laptop has <code>{RAM, CPU}</code> while a shirt has <code>{Size, Color}</code>. MongoDB stores both in one <code>products</code> collection without empty NULL columns!</p>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Traditional RDBMS (MySQL)</th><th>MongoDB (Document NoSQL)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Structure</strong></td><td>Tables, Rows, Columns</td><td><span class="hl-y">Collections, Documents, Fields</span></td></tr>
+            <tr><td><strong>Schema</strong></td><td>Fixed / Static</td><td><strong>Dynamic / Flexible</strong></td></tr>
+            <tr><td><strong>Relationships</strong></td><td>Foreign Keys & JOINs</td><td>Embedded Docs & References</td></tr>
+            <tr><td><strong>Scaling & Query</strong></td><td>Vertical; SQL (<code>SELECT</code>)</td><td><strong>Horizontal (Sharding)</strong>; MQL (<code>find()</code>)</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Comparison Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="74" viewBox="0 0 520 74">
+            <rect x="10" y="10" width="210" height="54" rx="6" fill="#eff6ff" stroke="#1d4ed8"/><text x="115" y="28" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">RDBMS (MySQL Table)</text><text x="115" y="50" text-anchor="middle" font-size="11.5" fill="#1e40af">| 49 | Amit | AI & ML |</text>
+            <text x="242" y="42" font-size="15" font-weight="700" fill="#dc2626">VS</text>
+            <rect x="278" y="10" width="232" height="54" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="394" y="28" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">MongoDB (Document)</text><text x="394" y="50" text-anchor="middle" font-size="11.5" fill="#166534">{ "roll": 49, "name": "Amit" }</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Schema flexibility, fast embedded reads, effortless horizontal sharding.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Max doc size = <strong>16 MB</strong>; higher RAM usage for repeated field names.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> MongoDB replaces rigid tables with agile JSON/BSON documents suited for modern scalable apps.</div>
+      </div>
+
+      <!-- PAGE 25 -->
+      <div class="page ruled-paper" data-idx="26">
+        <div class="nb-top"><span class="unit-pill">Unit 4.1 & 4.2: Use Cases & BSON Model</span><span class="page-stamp">Page: 25</span></div>
+        <div class="q-black">Q. Explain MongoDB Use Cases, Storage Hierarchy & BSON Format. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>BSON (Binary JSON)</strong> is MongoDB's <span class="hl-y">binary-encoded storage format</span> that parses faster than text JSON and supports rich types like <code>ObjectId</code> &amp; <code>Date</code>.</div>
+        <div class="h-black">Use Cases & Storage Hierarchy:</div>
+        <ul>
+          <li><strong>Use Cases:</strong> 1) E-Commerce product catalogs, 2) IoT sensor telemetry, 3) CMS/Blogs &amp; Mobile user profiles, 4) Real-time analytics dashboards.</li>
+          <li><strong>Storage Hierarchy:</strong> <strong>Database</strong> (<code>eng_db</code>) → <strong>Collection</strong> (like Table) → <strong>Document</strong> (like Row, max 16 MB) → <strong>Field</strong>.</li>
+          <li><strong>Why BSON over JSON?</strong> Stores binary length prefixes for fast scanning and supports extra types: <code>ObjectId</code> (12-byte unique ID), <code>Date</code>, <code>Int32/Int64</code>, <code>Decimal128</code>, and <code>Binary</code>.</li>
+        </ul>
+        <table class="hw-table">
+          <thead><tr><th>BSON Type</th><th>Example Value</th><th>Purpose in MongoDB</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ObjectId</strong></td><td><code>ObjectId("65f1...")</code></td><td>Auto-generated 12-byte unique primary key (<code>_id</code>)</td></tr>
+            <tr><td><strong>ISODate</strong></td><td><code>ISODate("2026-11-26")</code></td><td>Accurate date/time sorting &amp; TTL expiry</td></tr>
+            <tr><td><strong>Int32 / Double</strong></td><td><code>49</code> / <code>74.5</code></td><td>Numeric math, <code>$inc</code> &amp; range filters</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Storage Hierarchy Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="72" viewBox="0 0 520 72">
+            <rect x="6" y="16" width="108" height="36" rx="6" fill="#fef08a" stroke="#111827"/><text x="60" y="39" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Database</text>
+            <text x="120" y="39" font-size="15" fill="#dc2626">→</text>
+            <rect x="138" y="16" width="108" height="36" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="192" y="39" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Collection</text>
+            <text x="252" y="39" font-size="15" fill="#dc2626">→</text>
+            <rect x="270" y="10" width="242" height="48" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="391" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">BSON Document (≤16 MB)</text><text x="391" y="49" text-anchor="middle" font-size="11" fill="#166534">{ _id: ObjectId, roll: 49 }</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages (BSON):</strong> Faster machine traversal & rich data types (Date, Decimal128).</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Binary format is not directly human-readable without MongoDB drivers/shell.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> MongoDB's Collection-Document hierarchy powered by BSON ensures both flexibility and speed.</div>
+      </div>
+
+      <!-- PAGE 26 -->
+      <div class="page ruled-paper" data-idx="27">
+        <div class="nb-top"><span class="unit-pill">Unit 4.2: Engineering Schema Design</span><span class="page-stamp">Page: 26</span></div>
+        <div class="q-black">Q. Compare Embedded vs. Referenced Model & Design Engineering Schema. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>MongoDB Data Modeling</strong> chooses between <span class="hl-y">Embedding</span> (nesting sub-data in 1 doc) and <span class="hl-g">Referencing</span> (linking separate collections via <code>_id</code>).</div>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Embedded Model (Denormalized)</th><th>Referenced Model (Normalized)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Structure</strong></td><td>Nested inside <strong>1 document</strong></td><td>Separate collection via <code>_id</code></td></tr>
+            <tr><td><strong>Speed & Use</strong></td><td><strong>Fastest</strong> (1 query); 1-to-1 / 1-to-Few</td><td>Needs <code>$lookup</code>; 1-to-Many / Logs</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">Smart CNC Machine Engineering Schema:</div>
+        <div class="code-box">// Collection 1: machines (Embed static specs -> rarely changes)
+{ "_id": "M-101", "name": "CNC Lathe", "specs": { "max_rpm": 3000, "kw": 15 } }
+
+// Collection 2: sensor_logs (Reference via machine_id -> grows every second!)
+{ "_id": ObjectId("..."), "machine_id": "M-101", "temp_c": 74.2, "vibration": 1.8 }</div>
+        <div class="h-black">2D Schema Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="58" viewBox="0 0 510 58">
+            <rect x="10" y="10" width="210" height="38" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="115" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">machines (_id: "M-101")</text>
+            <text x="255" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">← Links —</text>
+            <rect x="290" y="10" width="210" height="38" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="395" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">sensor_logs (machine_id)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Avoids 16 MB doc overflow while keeping machine metadata instant to fetch.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Cross-collection reporting requires <code>$lookup</code> or 2 separate queries.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Combining Embedding (static specs) with Referencing (growing logs) is ideal for engineering telemetry.</div>
+      </div>
+
+      <!-- PAGE 27 -->
+      <div class="page ruled-paper" data-idx="28">
+        <div class="nb-top"><span class="unit-pill">Unit 4.3: CRUD (Create & Read)</span><span class="page-stamp">Page: 27</span></div>
+        <div class="q-black">Q. Explain Create and Read Operations in MongoDB Shell with Examples. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>CRUD</strong> means <span class="hl-y">Create, Read, Update, and Delete</span> — the 4 core database commands executed inside the <strong>MongoDB Shell (<code>mongosh</code>)</strong>.</div>
+        <div class="code-box">// 1. CREATE: Insert One or Multiple Documents
+db.students.insertOne({ roll_no: 49, name: "Amit Kumar", course: "AI & ML", sem: 5 })
+db.students.insertMany([
+  { roll_no: 50, name: "Rahul", sem: 5 },
+  { roll_no: 51, name: "Priya", sem: 5 }
+])
+
+// 2. READ: Retrieve Documents with Filter & Projection
+db.students.find({ roll_no: 49 })                       // Exact match
+db.students.find({ sem: { $gte: 5 } })                  // Filter: sem >= 5
+db.students.find({}, { name: 1, _id: 0 })               // Projection: show only name
+db.students.findOne({ roll_no: 49 })                    // First matching doc</div>
+        <table class="hw-table">
+          <thead><tr><th>Query Operator</th><th>Meaning &amp; Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>$gt</code> / <code>$gte</code></td><td>Greater than / Greater or equal: <code>{ sem: { $gte: 5 } }</code></td></tr>
+            <tr><td><code>$lt</code> / <code>$lte</code></td><td>Less than / Less or equal: <code>{ temp_c: { $lt: 90 } }</code></td></tr>
+            <tr><td><code>$in</code></td><td>Matches any value in array: <code>{ roll_no: { $in: [49, 50] } }</code></td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="58" viewBox="0 0 510 58">
+            <rect x="8" y="12" width="130" height="34" rx="6" fill="#fef9c3" stroke="#111827"/><text x="73" y="33" text-anchor="middle" font-size="11.5" fill="#111827">mongosh Shell</text>
+            <text x="144" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="162" y="12" width="165" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="244" y="33" text-anchor="middle" font-size="11.5" fill="#111827">insertOne() / find()</text>
+            <text x="333" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="352" y="12" width="150" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="427" y="33" text-anchor="middle" font-size="11.5" fill="#111827">JSON Output</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Clean JS syntax; auto-creates unique <code>_id</code>; rich filters (<code>$gte</code>, <code>$in</code>).</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Calling <code>find()</code> without <code>.limit()</code> on millions of docs can overload RAM.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> <code>insertOne/Many</code> and <code>find/findOne</code> make inserting and querying JSON data fast and intuitive.</div>
+      </div>
+
+      <!-- PAGE 28 -->
+      <div class="page ruled-paper" data-idx="29">
+        <div class="nb-top"><span class="unit-pill">Unit 4.3: CRUD (Update & Delete)</span><span class="page-stamp">Page: 28</span></div>
+        <div class="q-black">Q. Explain Update and Delete Operations in MongoDB Shell with Examples. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Update & Delete Operations</strong> modify specific fields atomically (using <code>$set</code>, <code>$inc</code>) or remove unwanted documents from a collection.</div>
+        <div class="code-box">// 3. UPDATE: Modify 1 or Many Documents
+db.students.updateOne({ roll_no: 49 }, { $set: { sem: 6, city: "Barh" } })
+db.students.updateMany({ course: "AI & ML" }, { $inc: { attendance: 1 } })
+
+// 4. DELETE: Remove 1 or Many Documents
+db.students.deleteOne({ roll_no: 51 })
+db.students.deleteMany({ sem: 1 })</div>
+        <table class="hw-table">
+          <thead><tr><th>Operation</th><th>SQL Command</th><th>MongoDB Shell (<code>mongosh</code>)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Create / Read</strong></td><td><code>INSERT</code> / <code>SELECT</code></td><td><code>insertOne()</code> / <code>find()</code></td></tr>
+            <tr><td><strong>Update / Delete</strong></td><td><code>UPDATE</code> / <code>DELETE</code></td><td><code>updateOne()</code> / <code>deleteOne()</code></td></tr>
+          </tbody>
+        </table>
+        <table class="hw-table">
+          <thead><tr><th>Update Operator</th><th>Purpose &amp; Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>$set</code> / <code>$unset</code></td><td>Update a field value / Remove a field from document</td></tr>
+            <tr><td><code>$inc</code> / <code>$push</code></td><td>Increment number by value / Append item to an array</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Update Flow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="58" viewBox="0 0 510 58">
+            <rect x="8" y="12" width="135" height="34" rx="6" fill="#fef9c3" stroke="#111827"/><text x="75" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Filter: {roll:49}</text>
+            <text x="149" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="166" y="12" width="150" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="241" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Operator: $set / $inc</text>
+            <text x="322" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="340" y="12" width="160" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="420" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Atomic Doc Updated!</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Single-doc updates are atomic; <code>$set</code> modifies only targeted fields cleanly.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Running <code>deleteMany({})</code> with empty filter wipes the entire collection!</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Careful use of atomic operators and exact filters ensures safe updates and deletions in MongoDB.</div>
+      </div>
+
+      <!-- PAGE 29 -->
+      <div class="page ruled-paper" data-idx="30">
+        <div class="nb-top"><span class="unit-pill">Unit 4.4: Data Modeling Best Practices</span><span class="page-stamp">Page: 29</span></div>
+        <div class="q-black">Q. Explain Best Practices for Data Modeling in MongoDB. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>MongoDB Best Practices</strong> are schema rules that optimize query speed, prevent hitting the <span class="hl-p">16 MB doc limit</span>, and reduce RAM/disk waste.</div>
+        <ol>
+          <li><strong>Design Around Query Patterns:</strong> Model collections based on how your app reads & writes most often.</li>
+          <li><strong>Embed 1-to-1 / 1-to-Few Data:</strong> Keep tightly linked data (User + Address) in 1 doc for 1-query speed.</li>
+          <li><strong>Reference 1-to-Many (Huge) Data:</strong> Store high-volume IoT logs separately with <code>machine_id</code>.</li>
+          <li><strong>Avoid Unbounded Arrays:</strong> Never let arrays grow endlessly inside a document.</li>
+          <li><strong>Use Proper Data Types:</strong> Store dates as <code>ISODate</code> & numbers as <code>Int32/Double</code>.</li>
+          <li><strong>Time-Series Bucket Pattern:</strong> Group hourly sensor readings into 1 doc per hour.</li>
+        </ol>
+        <div class="h-black">2D Decision Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="500" height="64" viewBox="0 0 500 64">
+            <rect x="8" y="14" width="185" height="36" rx="6" fill="#fef9c3" stroke="#111827"/><text x="100" y="36" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Small & Read Together?</text>
+            <text x="202" y="25" font-size="11" font-weight="700" fill="#15803d">YES →</text>
+            <rect x="245" y="4" width="245" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="367" y="20" text-anchor="middle" font-size="11.5" fill="#111827">Embed inside 1 Document</text>
+            <text x="202" y="52" font-size="11" font-weight="700" fill="#dc2626">NO  →</text>
+            <rect x="245" y="34" width="245" height="24" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="367" y="50" text-anchor="middle" font-size="11.5" fill="#111827">Reference in 2nd Collection</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Prevents 16 MB crashes, cuts query latency, minimizes disk I/O.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Embedded (denormalized) copies may need multiple updates if shared data changes.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Following query-driven modeling keeps MongoDB fast and scalable even at millions of documents.</div>
+      </div>
+
+      <!-- PAGE 30 -->
+      <div class="page ruled-paper" data-idx="31">
+        <div class="nb-top"><span class="unit-pill">Unit 4.4: Indexing Optimization</span><span class="page-stamp">Page: 30</span></div>
+        <div class="q-black">Q. Explain MongoDB Indexing Types & Performance Optimization. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>MongoDB Indexing</strong> uses <span class="hl-y">B-Tree structures</span> to convert slow full scans (<span class="hl-p">COLLSCAN</span>) into fast index scans (<span class="hl-g">IXSCAN</span>). Every collection auto-indexes <code>_id</code>.</div>
+        <table class="hw-table">
+          <thead><tr><th>Index Type</th><th>Purpose & Example Syntax</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1. Single-Field</strong></td><td>Index 1 field: <code>db.logs.createIndex({ machine_id: 1 })</code></td></tr>
+            <tr><td><strong>2. Compound</strong></td><td>Index 2+ fields: <code>db.logs.createIndex({ machine_id: 1, time: -1 })</code></td></tr>
+            <tr><td><strong>3. Multikey</strong></td><td>Auto-indexes elements inside an <strong>Array</strong> field (e.g., <code>skills</code>).</td></tr>
+            <tr><td><strong>4. Text Index</strong></td><td>Keyword search inside text fields: <code>{ notes: "text" }</code>.</td></tr>
+            <tr><td><strong>5. TTL Index</strong></td><td>Auto-deletes old temporary logs after <em>N</em> seconds!</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D B-Tree Optimization Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="66" viewBox="0 0 510 66">
+            <rect x="8" y="14" width="160" height="36" rx="6" fill="#fef9c3" stroke="#111827"/><text x="88" y="37" text-anchor="middle" font-size="11.5" fill="#111827">find({machine_id})</text>
+            <text x="176" y="25" font-size="11" fill="#dc2626">No Index →</text><rect x="248" y="5" width="250" height="24" rx="5" fill="#fef2f2" stroke="#dc2626"/><text x="373" y="21" text-anchor="middle" font-size="11" fill="#991b1b">COLLSCAN (Checks every doc - Slow)</text>
+            <text x="176" y="52" font-size="11" fill="#15803d">Indexed  →</text><rect x="248" y="35" width="250" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="373" y="51" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">IXSCAN (B-Tree Jump - Super Fast!)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Speeds up reads, sorting, & range queries on millions of engineering logs.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Uses extra RAM & slightly slows down INSERT/UPDATE write operations.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Selective Single-Field, Compound, and TTL indexes deliver peak MongoDB query performance.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="font-size:12px;color:#cbd5e1;font-family:'Segoe UI',sans-serif;" id="statusText">
+    Viewing: Cover Page (Use ⬅️ ➡️ keys, buttons, or click 📄 Download PDF)
+  </div>
+
+  <script>
+    let current = 0;
+    const pages = Array.from(document.querySelectorAll('.page'));
+    const pills = Array.from(document.querySelectorAll('.pill'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const statusText = document.getElementById('statusText');
+
+    function showPage(nextIdx, dir) {
+      if (nextIdx < 0 || nextIdx >= pages.length) return;
+      pages.forEach(p => p.classList.remove('active', 'flip-next', 'flip-prev'));
+      pills.forEach(p => p.classList.remove('active'));
+      const target = pages[nextIdx];
+      target.classList.add('active');
+      if (dir > 0) target.classList.add('flip-next');
+      if (dir < 0) target.classList.add('flip-prev');
+      pills[nextIdx].classList.add('active');
+      current = nextIdx;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === pages.length - 1;
+      const label = current === 0 ? 'Cover Page' : current === 1 ? 'Index Page' : `Page ${current - 1}`;
+      statusText.textContent = `Viewing: ${label} (${current + 1} / ${pages.length})`;
+    }
+    function flipPage(step) { showPage(current + step, step); }
+    function goToPage(idx) { showPage(idx, idx >= current ? 1 : -1); }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') flipPage(1);
+      if (e.key === 'ArrowLeft') flipPage(-1);
+    });
+    document.querySelectorAll('.ruled-paper').forEach(pg => {
+      const top = pg.querySelector('.nb-top');
+      if (top) {
+        const hdr = document.createElement('div');
+        hdr.className = 'chamgadar-bar';
+        hdr.innerHTML = '🦇 CHAMGADAR <span>• Big Data Analytics •</span>';
+        pg.insertBefore(hdr, top);
+      }
+    });
+    showPage(0, 0);
+  </script>
+</body>
+</html>
