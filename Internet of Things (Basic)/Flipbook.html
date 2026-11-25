@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHAMGADAR — Internet of Things (IoT) Handwritten Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 14px;
+      font-family: 'Panton Arabic Semi Bold', 'Panton Arabic', 'Panton', 'Nunito', 'Kalam', sans-serif;
+      font-weight: 600;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Navigation Bar */
+    .nav-bar {
+      width: 100%;
+      max-width: 790px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .nav-btn {
+      background: linear-gradient(135deg, #059669, #0891b2);
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .nav-btn.pdf-btn {
+      background: linear-gradient(135deg, #dc2626, #ea580c);
+    }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #475569;
+      background: transparent;
+      color: #e2e8f0;
+    }
+    .pill.active {
+      background: #facc15;
+      border-color: #facc15;
+      color: #0f172a;
+    }
+
+    /* Stage & Clean Borderless Notebook Shell */
+    .stage {
+      perspective: 1800px;
+      width: 100%;
+      max-width: 790px;
+      display: flex;
+      justify-content: center;
+    }
+    .notebook-shell {
+      position: relative;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      background: #fffef7;
+    }
+
+    /* Pages (Zero Left Black Bar, Natural Height, Clean Spacing!) */
+    .page {
+      display: none;
+      width: 100%;
+      padding: 20px 30px 26px 58px;
+      color: #1e40af;
+      transform-origin: left center;
+      position: relative;
+    }
+    .page.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+    .page.flip-next { animation: flipNext 0.38s ease; }
+    .page.flip-prev { animation: flipPrev 0.38s ease; }
+    @keyframes flipNext {
+      0% { opacity: 0.3; transform: rotateY(-14deg); }
+      100% { opacity: 1; transform: rotateY(0deg); }
+    }
+    @keyframes flipPrev {
+      0% { opacity: 0.3; transform: rotateY(14deg); }
+      100% { opacity: 1; transform: rotateY(0deg); }
+    }
+
+    /* Ruled Paper */
+    .ruled-paper {
+      background-color: #fffef7;
+      background-image: linear-gradient(to bottom, transparent 27px, #dbeafe 28px);
+      background-size: 100% 28px;
+    }
+    .ruled-paper::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 42px;
+      width: 3px;
+      border-left: 1.5px solid #ef4444;
+      border-right: 1px solid #fca5a5;
+      z-index: 5;
+    }
+    .ruled-paper::after {
+      content: '';
+      position: absolute;
+      top: 74px; left: 0; right: 0;
+      height: 2px;
+      border-top: 1.5px solid #ef4444;
+      z-index: 5;
+    }
+
+    /* Authentic Handwritten Cover Page */
+    .cover-page {
+      background-color: #fdf8ec;
+      background-image: linear-gradient(to bottom, transparent 27px, #e2e8f0 28px);
+      background-size: 100% 28px;
+      color: #111827;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 780px;
+      padding: 28px 34px;
+      position: relative;
+    }
+    .cover-page.active { display: flex; }
+    .cover-frame {
+      border: 3px solid #111827;
+      outline: 2px dashed #059669;
+      outline-offset: -8px;
+      border-radius: 14px;
+      padding: 24px 26px;
+      min-height: 730px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(255, 254, 247, 0.9);
+    }
+
+    /* CHAMGADAR Top Header on Every Page */
+    .chamgadar-bar {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #dc2626;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .chamgadar-bar span {
+      color: #111827;
+      font-size: 11.5px;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    /* Page Header */
+    .nb-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 2px;
+    }
+    .unit-pill {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #111827;
+      background: #fef08a;
+      padding: 3px 11px;
+      border-radius: 6px;
+      border: 1.5px solid #111827;
+    }
+    .page-stamp {
+      border: 1.5px solid #dc2626;
+      color: #dc2626;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 3px 11px;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    /* 3-Pen Color Typography with Comfortable Breathing Space */
+    .q-black {
+      color: #111827;
+      font-size: 17px;
+      font-weight: 700;
+      margin: 6px 0 8px;
+      border-bottom: 2px solid #dc2626;
+      padding-bottom: 4px;
+    }
+    .h-black {
+      color: #111827;
+      font-size: 15.5px;
+      font-weight: 700;
+      margin: 10px 0 4px;
+      text-decoration: underline;
+      text-decoration-color: #dc2626;
+    }
+    .ans-blue {
+      color: #1e40af;
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 4px 0 7px;
+    }
+    .def-red {
+      color: #b91c1c;
+      background: #fef2f2;
+      border: 1.5px dashed #ef4444;
+      border-radius: 8px;
+      padding: 9px 13px;
+      font-size: 14.8px;
+      line-height: 1.55;
+      margin: 6px 0 9px;
+    }
+    .conc-red {
+      color: #991b1b;
+      background: #fff1f2;
+      border-left: 4px solid #dc2626;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 14.4px;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+    .imp { color: #dc2626; font-weight: 700; }
+
+    /* Highlighters */
+    .hl-y { background: #fef08a; padding: 0 4px; border-radius: 3px; font-weight: 700; color: #111827; }
+    .hl-p { background: #fce7f3; padding: 0 4px; border-radius: 3px; font-weight: 700; color: #9d174d; }
+    .hl-g { background: #dcfce7; padding: 0 4px; border-radius: 3px; font-weight: 700; color: #166534; }
+
+    ul, ol { margin: 5px 0 9px 20px; padding: 0; }
+    li { font-size: 14.8px; line-height: 1.58; color: #1e40af; margin-bottom: 5px; }
+
+    /* Tables */
+    table.hw-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 13.8px;
+      background: rgba(255, 255, 255, 0.92);
+    }
+    table.hw-table th {
+      background: #fef08a;
+      color: #111827;
+      border: 1.4px solid #111827;
+      padding: 6px 9px;
+      text-align: left;
+      font-weight: 700;
+    }
+    table.hw-table td {
+      border: 1.1px solid #475569;
+      padding: 6px 9px;
+      color: #1e40af;
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    /* Pros & Cons Grid */
+    .pc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 8px 0;
+    }
+    .pc-box {
+      border-radius: 8px;
+      padding: 8px 11px;
+      font-size: 14px;
+      line-height: 1.48;
+    }
+    .pc-pro { background: #f0fdf4; border: 1.4px solid #16a34a; color: #166534; }
+    .pc-con { background: #fef2f2; border: 1.4px solid #dc2626; color: #991b1b; }
+
+    /* Code & SVG Diagram Boxes */
+    .code-box {
+      background: #f8fafc;
+      border: 1.4px solid #334155;
+      border-left: 4px solid #dc2626;
+      border-radius: 7px;
+      padding: 9px 12px;
+      margin: 8px 0;
+      font-family: 'Consolas', monospace;
+      font-size: 12.2px;
+      line-height: 1.46;
+      color: #111827;
+      white-space: pre-wrap;
+    }
+    .svg-wrap {
+      margin: 8px 0;
+      display: flex;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1.5px dashed #64748b;
+      border-radius: 9px;
+      padding: 10px;
+    }
+    svg text { font-family: 'Panton Arabic Semi Bold', 'Panton Arabic', 'Panton', 'Nunito', 'Kalam', sans-serif; font-weight: 600; }
+
+    /* Print / PDF Export Styling */
+    @page { size: A4 portrait; margin: 0; }
+    @media print {
+      body { background: #fff; padding: 0; margin: 0; }
+      .nav-bar, #statusText { display: none !important; }
+      .stage, .notebook-shell { max-width: 100%; box-shadow: none; border-radius: 0; }
+      .page {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 6px;
+        page-break-after: always;
+        break-after: page;
+        min-height: 296mm;
+        height: 296mm;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .cover-page { display: flex !important; }
+      .cover-frame { min-height: 274mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Toolbar -->
+  <div class="nav-bar">
+    <div style="display:flex;gap:6px;">
+      <button class="nav-btn" id="prevBtn" onclick="flipPage(-1)">⬅️ Prev</button>
+      <button class="nav-btn" id="nextBtn" onclick="flipPage(1)">Next ➡️</button>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;" id="pagePills">
+      <button class="pill active" onclick="goToPage(0)">Cover</button>
+      <button class="pill" onclick="goToPage(1)">Index</button>
+      <button class="pill" onclick="goToPage(2)">P1</button>
+      <button class="pill" onclick="goToPage(3)">P2</button>
+      <button class="pill" onclick="goToPage(4)">P3</button>
+      <button class="pill" onclick="goToPage(5)">P4</button>
+      <button class="pill" onclick="goToPage(6)">P5</button>
+      <button class="pill" onclick="goToPage(7)">P6</button>
+      <button class="pill" onclick="goToPage(8)">P7</button>
+      <button class="pill" onclick="goToPage(9)">P8</button>
+      <button class="pill" onclick="goToPage(10)">P9</button>
+      <button class="pill" onclick="goToPage(11)">P10</button>
+      <button class="pill" onclick="goToPage(12)">P11</button>
+      <button class="pill" onclick="goToPage(13)">P12</button>
+      <button class="pill" onclick="goToPage(14)">P13</button>
+      <button class="pill" onclick="goToPage(15)">P14</button>
+      <button class="pill" onclick="goToPage(16)">P15</button>
+      <button class="pill" onclick="goToPage(17)">P16</button>
+      <button class="pill" onclick="goToPage(18)">P17</button>
+      <button class="pill" onclick="goToPage(19)">P18</button>
+      <button class="pill" onclick="goToPage(20)">P19</button>
+      <button class="pill" onclick="goToPage(21)">P20</button>
+      <button class="pill" onclick="goToPage(22)">P21</button>
+      <button class="pill" onclick="goToPage(23)">P22</button>
+      <button class="pill" onclick="goToPage(24)">P23</button>
+      <button class="pill" onclick="goToPage(25)">P24</button>
+      <button class="pill" onclick="goToPage(26)">P25</button>
+      <button class="pill" onclick="goToPage(27)">P26</button>
+      <button class="pill" onclick="goToPage(28)">P27</button>
+      <button class="pill" onclick="goToPage(29)">P28</button>
+      <button class="pill" onclick="goToPage(30)">P29</button>
+      <button class="pill" onclick="goToPage(31)">P30</button>
+      <button class="pill" onclick="goToPage(32)">P31</button>
+    </div>
+    <button class="nav-btn pdf-btn" onclick="window.print()">📄 Download PDF</button>
+  </div>
+
+  <!-- Notebook Stage -->
+  <div class="stage">
+    <div class="notebook-shell">
+
+      <!-- SLIDE 0: AUTHENTIC HANDWRITTEN COVER -->
+      <div class="page cover-page active" data-idx="0">
+        <div class="cover-frame">
+          <div style="text-align:center;">
+            <div style="display:inline-block;background:#fef08a;border:2px solid #111827;border-radius:999px;padding:4px 20px;font-size:17px;font-weight:800;letter-spacing:4px;color:#dc2626;">
+              🦇 CHAMGADAR 🦇
+            </div>
+            <div style="font-size:12.5px;color:#1e40af;margin-top:6px;letter-spacing:2px;">
+              HANDWRITTEN CLASS NOTEBOOK • SESSION 2026-27
+            </div>
+          </div>
+
+          <!-- Handwritten Title + Hand-Drawn IoT Doodles -->
+          <div style="text-align:center;margin:10px 0;">
+            <div style="font-size:13px;color:#dc2626;letter-spacing:3px;font-weight:700;">SUBJECT</div>
+            <div style="font-size:48px;font-weight:800;color:#111827;line-height:1.12;margin-top:4px;text-decoration:underline;text-decoration-color:#059669;text-underline-offset:8px;">
+              Internet of Things (IoT)
+            </div>
+            <div style="font-size:16.5px;color:#1e40af;margin-top:14px;">
+              <span class="hl-y">Simple English</span> • <span class="hl-g">2D / Architecture Diagrams</span> • <span class="hl-p">Exam Ready (4 &amp; 6 Marks)</span>
+            </div>
+
+            <!-- Hand-Drawn IoT Doodle Sketch -->
+            <div class="svg-wrap" style="margin:20px auto 12px;max-width:560px;background:#fff;">
+              <svg width="530" height="225" viewBox="0 0 530 225">
+                <circle cx="265" cy="112" r="52" fill="#ecfdf5" stroke="#059669" stroke-width="2.2" stroke-dasharray="5 3"/>
+                <circle cx="265" cy="112" r="34" fill="#fef08a" stroke="#111827" stroke-width="2"/>
+                <text x="265" y="108" text-anchor="middle" font-size="14" font-weight="800" fill="#dc2626">IoT HUB</text>
+                <text x="265" y="126" text-anchor="middle" font-size="11" fill="#111827">Smart World</text>
+
+                <rect x="16" y="16" width="150" height="54" rx="8" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+                <text x="91" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Sensors &amp; Pi</text>
+                <text x="91" y="58" text-anchor="middle" font-size="11" fill="#1e40af">Arduino • ESP32</text>
+
+                <rect x="364" y="16" width="150" height="54" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+                <text x="439" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">IoT Cloud</text>
+                <text x="439" y="58" text-anchor="middle" font-size="11" fill="#854d0e">AWS • Azure • GCP</text>
+
+                <rect x="16" y="155" width="150" height="54" rx="8" fill="#fce7f3" stroke="#be185d" stroke-width="2"/>
+                <text x="91" y="179" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Python &amp; OS</text>
+                <text x="91" y="197" text-anchor="middle" font-size="11" fill="#9d174d">MQTT • FreeRTOS</text>
+
+                <rect x="364" y="155" width="150" height="54" rx="8" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+                <text x="439" y="179" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">Applications</text>
+                <text x="439" y="197" text-anchor="middle" font-size="11" fill="#166534">Home • Farm • Health</text>
+
+                <line x1="166" y1="52" x2="218" y2="88" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+                <line x1="364" y1="52" x2="312" y2="88" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+                <line x1="166" y1="175" x2="218" y2="138" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+                <line x1="364" y1="175" x2="312" y2="138" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+              </svg>
+            </div>
+
+            <div style="display:inline-flex;gap:10px;font-size:12.5px;margin-top:6px;">
+              <span style="color:#111827;border:1.5px solid #111827;padding:3px 10px;border-radius:6px;background:#fff;">⬛ Black: Headings</span>
+              <span style="color:#1d4ed8;border:1.5px solid #1d4ed8;padding:3px 10px;border-radius:6px;background:#eff6ff;">🟦 Blue: Answers</span>
+              <span style="color:#dc2626;border:1.5px solid #dc2626;padding:3px 10px;border-radius:6px;background:#fef2f2;">🟥 Red: Def &amp; Conclusion</span>
+            </div>
+          </div>
+
+          <!-- Classic Handwritten Notebook Name Slip -->
+          <div style="border:2px solid #111827;border-radius:12px;padding:16px 22px;background:#fffef7;box-shadow:4px 4px 0 #059669;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:15px;">
+              <div><span style="color:#dc2626;font-weight:700;">Name :</span> <span style="color:#111827;font-weight:800;border-bottom:1.5px dashed #1e40af;">AMIT KUMAR</span></div>
+              <div><span style="color:#dc2626;font-weight:700;">Roll No. :</span> <span style="color:#111827;font-weight:800;border-bottom:1.5px dashed #1e40af;">49</span></div>
+              <div><span style="color:#dc2626;font-weight:700;">Course :</span> <span style="color:#1e40af;font-weight:700;border-bottom:1.5px dashed #1e40af;">AI &amp; Machine Learning</span></div>
+              <div><span style="color:#dc2626;font-weight:700;">Semester :</span> <span style="color:#1e40af;font-weight:700;border-bottom:1.5px dashed #1e40af;">5th Semester</span></div>
+            </div>
+            <div style="margin-top:10px;padding-top:8px;border-top:1.5px dashed #94a3b8;display:flex;justify-content:space-between;font-size:12.5px;color:#111827;">
+              <span>🏫 <strong>Government Polytechnic Barh</strong></span>
+              <span>📖 <strong>Units 1.0 – 5.0 • Pages: 01 – 31</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 1: PURE INDEX PAGE (ZERO FILLER!) -->
+      <div class="page ruled-paper" data-idx="1">
+        <div class="nb-top">
+          <span class="unit-pill">📑 COMPLETE INDEX (Click any Topic to Open)</span>
+          <span class="page-stamp">INDEX</span>
+        </div>
+        <table class="hw-table" style="font-size:14.2px;">
+          <thead><tr><th style="width:115px;">Unit No.</th><th>Topic Name</th><th style="width:85px;text-align:center;">Page No.</th></tr></thead>
+          <tbody>
+            <tr onclick="goToPage(2)" style="cursor:pointer;"><td style="padding:11px 10px;"><strong>Unit 1.0</strong></td><td style="padding:11px 10px;">Basics &amp; Concepts of IoT (4-Step Working &amp; Characteristics)</td><td style="padding:11px 10px;text-align:center;"><strong>01</strong></td></tr>
+            <tr onclick="goToPage(3)" style="cursor:pointer;"><td style="padding:11px 10px;"><strong>Unit 1.0</strong></td><td style="padding:11px 10px;">History &amp; Evolution of IoT (1982 Coke Machine to AIoT)</td><td style="padding:11px 10px;text-align:center;"><strong>02</strong></td></tr>
+            <tr onclick="goToPage(4)" style="cursor:pointer;"><td style="padding:11px 10px;"><strong>Unit 1.0</strong></td><td style="padding:11px 10px;">Basic IoT System &amp; Its 5 Building Blocks</td><td style="padding:11px 10px;text-align:center;"><strong>03</strong></td></tr>
+            <tr onclick="goToPage(5)" style="cursor:pointer;"><td style="padding:11px 10px;"><strong>Unit 1.0</strong></td><td style="padding:11px 10px;">Various IoT Cloud Platforms (AWS IoT, Azure IoT, GCP)</td><td style="padding:11px 10px;text-align:center;"><strong>04</strong></td></tr>
+            <tr onclick="goToPage(6)" style="cursor:pointer;"><td style="padding:11px 10px;"><strong>Unit 1.0</strong></td><td style="padding:11px 10px;">Introduction to Python Programming for IoT (With Code)</td><td style="padding:11px 10px;text-align:center;"><strong>05</strong></td></tr>
+            <tr onclick="goToPage(7)" style="cursor:pointer;"><td style="padding:11px 10px;"><strong>Unit 1.0</strong></td><td style="padding:11px 10px;">IoT Software Stack, Operating Systems &amp; Protocols (MQTT/CoAP)</td><td style="padding:11px 10px;text-align:center;"><strong>06</strong></td></tr>
+            <tr onclick="goToPage(8)" style="cursor:pointer;"><td style="padding:7px 10px;"><strong>Unit 1.0</strong></td><td style="padding:7px 10px;">Real-World Applications of IoT (Home, Health, Farm, City, IIoT)</td><td style="padding:7px 10px;text-align:center;"><strong>07</strong></td></tr>
+            <tr onclick="goToPage(9)" style="cursor:pointer;"><td style="padding:7px 10px;"><strong>Unit 2.0</strong></td><td style="padding:7px 10px;">Basics of IoT Communication Protocols &amp; Applications</td><td style="padding:7px 10px;text-align:center;"><strong>08</strong></td></tr>
+            <tr onclick="goToPage(10)" style="cursor:pointer;"><td style="padding:7px 10px;"><strong>Unit 2.0</strong></td><td style="padding:7px 10px;">MQTT Protocol (Publish-Subscribe Architecture &amp; QoS Levels)</td><td style="padding:7px 10px;text-align:center;"><strong>09</strong></td></tr>
+            <tr onclick="goToPage(11)" style="cursor:pointer;"><td style="padding:7px 10px;"><strong>Unit 2.0</strong></td><td style="padding:7px 10px;">Bluetooth Low Energy (BLE) &amp; Applications</td><td style="padding:7px 10px;text-align:center;"><strong>10</strong></td></tr>
+            <tr onclick="goToPage(12)" style="cursor:pointer;"><td style="padding:7px 10px;"><strong>Unit 2.0</strong></td><td style="padding:7px 10px;">ZigBee Protocol (IEEE 802.15.4 Mesh Network) &amp; Applications</td><td style="padding:7px 10px;text-align:center;"><strong>11</strong></td></tr>
+            <tr onclick="goToPage(13)" style="cursor:pointer;"><td style="padding:7px 10px;"><strong>Unit 2.0</strong></td><td style="padding:7px 10px;">LoRa &amp; LoRaWAN (Long-Range LPWAN IoT) &amp; Applications</td><td style="padding:7px 10px;text-align:center;"><strong>12</strong></td></tr>
+            <tr onclick="goToPage(14)" style="cursor:pointer;"><td style="padding:5px 9px;"><strong>Unit 2.0</strong></td><td style="padding:5px 9px;">Wi-Fi (IEEE 802.11) &amp; Master Comparison of All 5 Protocols</td><td style="padding:5px 9px;text-align:center;"><strong>13</strong></td></tr>
+            <tr onclick="goToPage(15)" style="cursor:pointer;"><td style="padding:5px 9px;"><strong>Unit 3.0</strong></td><td style="padding:5px 9px;">Sensors, Actuators &amp; Transducers (With Comparison)</td><td style="padding:5px 9px;text-align:center;"><strong>14</strong></td></tr>
+            <tr onclick="goToPage(16)" style="cursor:pointer;"><td style="padding:5px 9px;"><strong>Unit 3.0</strong></td><td style="padding:5px 9px;">Classifications of IoT Sensors (Active/Passive, Analog/Digital)</td><td style="padding:5px 9px;text-align:center;"><strong>15</strong></td></tr>
+            <tr onclick="goToPage(17)" style="cursor:pointer;"><td style="padding:5px 9px;"><strong>Unit 3.0</strong></td><td style="padding:5px 9px;">IoT Sensor Development Boards (Arduino, NodeMCU, ESP32, Pi)</td><td style="padding:5px 9px;text-align:center;"><strong>16</strong></td></tr>
+            <tr onclick="goToPage(18)" style="cursor:pointer;"><td style="padding:5px 9px;"><strong>Unit 3.0</strong></td><td style="padding:5px 9px;">Basics of Wireless Networks &amp; WiFi Libraries</td><td style="padding:5px 9px;text-align:center;"><strong>17</strong></td></tr>
+            <tr onclick="goToPage(19)" style="cursor:pointer;"><td style="padding:5px 9px;"><strong>Unit 3.0</strong></td><td style="padding:5px 9px;">Introduction to NodeMCU, Block Diagram &amp; Pin Functions</td><td style="padding:5px 9px;text-align:center;"><strong>18</strong></td></tr>
+            <tr onclick="goToPage(20)" style="cursor:pointer;"><td style="padding:5px 9px;"><strong>Unit 3.0</strong></td><td style="padding:5px 9px;">Interfacing Sensors with NodeMCU &amp; Publishing on Webserver</td><td style="padding:5px 9px;text-align:center;"><strong>19</strong></td></tr>
+            <tr onclick="goToPage(21)" style="cursor:pointer;"><td style="padding:4px 9px;"><strong>Unit 3.0</strong></td><td style="padding:4px 9px;">Device Integration with NodeMCU &amp; Sensor Interfacing Rules</td><td style="padding:4px 9px;text-align:center;"><strong>20</strong></td></tr>
+            <tr onclick="goToPage(22)" style="cursor:pointer;"><td style="padding:4px 9px;"><strong>Unit 4.0</strong></td><td style="padding:4px 9px;">Introduction to APIs &amp; Their Use in IoT</td><td style="padding:4px 9px;text-align:center;"><strong>21</strong></td></tr>
+            <tr onclick="goToPage(23)" style="cursor:pointer;"><td style="padding:4px 9px;"><strong>Unit 4.0</strong></td><td style="padding:4px 9px;">MQTT API: Publisher, Broker, Subscriber &amp; Applications</td><td style="padding:4px 9px;text-align:center;"><strong>22</strong></td></tr>
+            <tr onclick="goToPage(24)" style="cursor:pointer;"><td style="padding:4px 9px;"><strong>Unit 4.0</strong></td><td style="padding:4px 9px;">REST API (HTTP Methods &amp; IoT Applications)</td><td style="padding:4px 9px;text-align:center;"><strong>23</strong></td></tr>
+            <tr onclick="goToPage(25)" style="cursor:pointer;"><td style="padding:4px 9px;"><strong>Unit 4.0</strong></td><td style="padding:4px 9px;">SOAP API &amp; REST vs. SOAP Comparison</td><td style="padding:4px 9px;text-align:center;"><strong>24</strong></td></tr>
+            <tr onclick="goToPage(26)" style="cursor:pointer;"><td style="padding:4px 9px;"><strong>Unit 4.5</strong></td><td style="padding:4px 9px;">JSON (Syntax, IoT Payload &amp; JSON vs. XML)</td><td style="padding:4px 9px;text-align:center;"><strong>25</strong></td></tr>
+            <tr onclick="goToPage(27)" style="cursor:pointer;"><td style="padding:3.5px 9px;"><strong>Unit 4.6</strong></td><td style="padding:3.5px 9px;">Programming IoT APIs Using Python</td><td style="padding:3.5px 9px;text-align:center;"><strong>26</strong></td></tr>
+            <tr onclick="goToPage(28)" style="cursor:pointer;"><td style="padding:3.5px 9px;"><strong>Unit 5.0</strong></td><td style="padding:3.5px 9px;">Industrial IoT (IIoT) &amp; Internet of Everything (IoE)</td><td style="padding:3.5px 9px;text-align:center;"><strong>27</strong></td></tr>
+            <tr onclick="goToPage(29)" style="cursor:pointer;"><td style="padding:3.5px 9px;"><strong>Unit 5.0</strong></td><td style="padding:3.5px 9px;">IoT for Consumer Electronics Products</td><td style="padding:3.5px 9px;text-align:center;"><strong>28</strong></td></tr>
+            <tr onclick="goToPage(30)" style="cursor:pointer;"><td style="padding:3.5px 9px;"><strong>Unit 5.0</strong></td><td style="padding:3.5px 9px;">IoT for Medical Applications (IoMT)</td><td style="padding:3.5px 9px;text-align:center;"><strong>29</strong></td></tr>
+            <tr onclick="goToPage(31)" style="cursor:pointer;"><td style="padding:3.5px 9px;"><strong>Unit 5.0</strong></td><td style="padding:3.5px 9px;">IoT for Agriculture (Smart Farming)</td><td style="padding:3.5px 9px;text-align:center;"><strong>30</strong></td></tr>
+            <tr onclick="goToPage(32)" style="cursor:pointer;"><td style="padding:3.5px 9px;"><strong>Unit 5.0</strong></td><td style="padding:3.5px 9px;">IoT for Security and Law Enforcement</td><td style="padding:3.5px 9px;text-align:center;"><strong>31</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGE 1 -->
+      <div class="page ruled-paper" data-idx="2">
+        <div class="nb-top"><span class="unit-pill">Unit 1.0: Basics &amp; Concepts of IoT</span><span class="page-stamp">Page: 01</span></div>
+        <div class="q-black">Q. What is IoT? Explain the Basics and Core Concepts of IoT. (4/6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>IoT (Internet of Things)</strong> is a network of <span class="hl-y">physical everyday objects ("Things")</span> embedded with sensors, software, and internet connectivity to collect, share, and act on data automatically.</div>
+        <div class="h-black">Core Concepts &amp; Key Characteristics:</div>
+        <ul>
+          <li><strong>4-Word Formula:</strong> <span class="hl-g">Sense → Connect → Analyze → Act</span> (without manual typing!).</li>
+          <li><strong>Connectivity &amp; Identity:</strong> Every smart device has a unique IP address and connects via WiFi, Bluetooth, 4G/5G, or Zigbee.</li>
+          <li><strong>Sensing &amp; Actuation:</strong> <em>Sensors</em> read the environment (temp/motion); <em>Actuators</em> take physical action (switch ON fan/motor).</li>
+          <li><strong>Intelligence &amp; Scalability:</strong> Cloud/AI analyzes live data and controls billions of devices simultaneously.</li>
+        </ul>
+        <div class="h-black">Real-Life Student &amp; Company Examples:</div>
+        <p class="ans-blue"><strong>Student Ex (Smart Hostel Room):</strong> Temperature sensor reads <code>35°C</code> → ESP32 sends data over WiFi → Fan turns ON automatically before you enter!<br/>
+        <strong>Company Ex:</strong> <strong>Amazon Alexa</strong>, Apple Watch, and Xiaomi Smart Bulbs controlled globally from a smartphone.</p>
+        <div class="h-black">2D Concept Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="530" height="72" viewBox="0 0 530 72">
+            <rect x="6" y="14" width="122" height="44" rx="7" fill="#dbeafe" stroke="#1d4ed8"/><text x="67" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">1. Thing + Sensor</text><text x="67" y="50" text-anchor="middle" font-size="10.5" fill="#1e40af">(Temp = 35°C)</text>
+            <text x="134" y="40" font-size="15" fill="#dc2626">→</text>
+            <rect x="152" y="14" width="108" height="44" rx="7" fill="#fef9c3" stroke="#ca8a04"/><text x="206" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">2. Internet</text><text x="206" y="50" text-anchor="middle" font-size="10.5" fill="#854d0e">(WiFi / 5G)</text>
+            <text x="266" y="40" font-size="15" fill="#dc2626">→</text>
+            <rect x="284" y="14" width="112" height="44" rx="7" fill="#fce7f3" stroke="#be185d"/><text x="340" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">3. Cloud / AI</text><text x="340" y="50" text-anchor="middle" font-size="10.5" fill="#9d174d">(Decides ON)</text>
+            <text x="402" y="40" font-size="15" fill="#dc2626">→</text>
+            <rect x="420" y="14" width="104" height="44" rx="7" fill="#dcfce7" stroke="#15803d"/><text x="472" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">4. Action!</text><text x="472" y="50" text-anchor="middle" font-size="10.5" fill="#166534">(Fan ON)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Saves time &amp; electricity, 24×7 remote monitoring, automates daily tasks.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Privacy/hacking risk if unsecured; depends on continuous WiFi &amp; power.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> IoT converts ordinary offline physical objects into smart, self-acting connected systems.</div>
+      </div>
+
+      <!-- PAGE 2 -->
+      <div class="page ruled-paper" data-idx="3">
+        <div class="nb-top"><span class="unit-pill">Unit 1.0: History &amp; Evolution of IoT</span><span class="page-stamp">Page: 02</span></div>
+        <div class="q-black">Q. Explain the History and Evolution of IoT with Key Milestones. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> The <strong>History of IoT</strong> traces how physical machines evolved from isolated appliances into globally connected smart devices powered by RFID, IPv6, Cloud, and AI.</div>
+        <div class="h-black">Step-by-Step Historical Timeline:</div>
+        <ol>
+          <li><strong>1982 — First IoT Appliance (CMU):</strong> Students at Carnegie Mellon University connected a <strong>Coca-Cola vending machine</strong> to ARPANET to check cold drink stock from their desks!</li>
+          <li><strong>1990 — First Internet Toaster:</strong> John Romkey connected a bread toaster to the internet via TCP/IP.</li>
+          <li><strong>1999 — Term "IoT" Coined <span class="imp">(★ Very Imp)</span>:</strong> <span class="hl-y">Kevin Ashton</span> (MIT Auto-ID Center) coined <strong>"Internet of Things"</strong> while pitching RFID tags for Procter &amp; Gamble's supply chain.</li>
+          <li><strong>2008–2009 — Cisco Tipping Point:</strong> Connected devices officially <strong>exceeded the total human population</strong> on Earth!</li>
+          <li><strong>2010s–2026 — 5G &amp; AIoT Era:</strong> Cheap boards (Arduino, ESP32, Raspberry Pi), Cloud, and AI enabled smart homes, wearables &amp; autonomous vehicles.</li>
+        </ol>
+        <div class="h-black">2D Evolution Timeline Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="530" height="72" viewBox="0 0 530 72">
+            <rect x="6" y="14" width="115" height="44" rx="6" fill="#eff6ff" stroke="#1d4ed8"/><text x="63" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">1982</text><text x="63" y="50" text-anchor="middle" font-size="10.5" fill="#1e40af">Coke Machine</text>
+            <text x="126" y="40" font-size="14" fill="#dc2626">→</text>
+            <rect x="142" y="14" width="120" height="44" rx="6" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="202" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#dc2626">1999 (MIT)</text><text x="202" y="50" text-anchor="middle" font-size="10.5" fill="#111827">Kevin Ashton</text>
+            <text x="267" y="40" font-size="14" fill="#dc2626">→</text>
+            <rect x="283" y="14" width="115" height="44" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="340" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">2009 (Cisco)</text><text x="340" y="50" text-anchor="middle" font-size="10.5" fill="#9d174d">Devices &gt; Humans</text>
+            <text x="403" y="40" font-size="14" fill="#dc2626">→</text>
+            <rect x="419" y="14" width="105" height="44" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="471" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">2026</text><text x="471" y="50" text-anchor="middle" font-size="10.5" fill="#166534">5G + AIoT</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Sensors became tiny &amp; affordable; IPv6 gave unlimited device addresses.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Rapid hardware explosion created legacy security flaws &amp; electronic waste.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Starting from a 1982 vending machine and Kevin Ashton's 1999 RFID vision, IoT now connects 15+ billion devices worldwide.</div>
+      </div>
+
+      <!-- PAGE 3 -->
+      <div class="page ruled-paper" data-idx="4">
+        <div class="nb-top"><span class="unit-pill">Unit 1.0: IoT System &amp; Building Blocks</span><span class="page-stamp">Page: 03</span></div>
+        <div class="q-black">Q. Explain a Basic IoT System and Its 5 Building Blocks with Diagram. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> A <strong>Basic IoT System</strong> is an end-to-end architecture of <span class="hl-y">5 connected building blocks</span> that sense physical data, transmit it, process it in the cloud, and trigger user actions.</div>
+        <div class="h-black">5 Building Blocks (+ Smart College Garden Example):</div>
+        <ol>
+          <li><strong>Sensors &amp; Actuators (Perception):</strong> <em>Sensors</em> read environment (DHT11 Temp, Soil Moisture); <em>Actuators</em> act physically (Relay, Water Pump).</li>
+          <li><strong>Microcontroller / Gateway (Edge):</strong> Reads sensors &amp; runs control code (<strong>Arduino Uno, ESP32, Raspberry Pi</strong>).</li>
+          <li><strong>Connectivity / Network:</strong> Sends data using <strong>WiFi, Bluetooth, Zigbee, LoRa, 4G/5G</strong> &amp; <strong>MQTT/HTTP</strong>.</li>
+          <li><strong>Cloud &amp; Data Analytics:</strong> Stores sensor logs &amp; evaluates rules/AI (AWS IoT, Azure, ThingSpeak).</li>
+          <li><strong>User Interface (App/Dashboard):</strong> Mobile app showing live charts &amp; manual ON/OFF controls.</li>
+        </ol>
+        <p class="ans-blue"><strong>Real Example:</strong> Soil sensor detects dry soil → ESP32 sends value via WiFi → Cloud sends alert → Relay starts water pump &amp; updates student's app!</p>
+        <div class="h-black">2D Building Blocks Architecture Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="535" height="66" viewBox="0 0 535 66">
+            <rect x="4" y="12" width="95" height="42" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="51" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">1. Sensors</text><text x="51" y="47" text-anchor="middle" font-size="10" fill="#1e40af">&amp; Actuators</text>
+            <text x="103" y="37" font-size="13" fill="#dc2626">↔</text>
+            <rect x="118" y="12" width="92" height="42" rx="6" fill="#fef08a" stroke="#111827"/><text x="164" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">2. ESP32 /</text><text x="164" y="47" text-anchor="middle" font-size="10" fill="#111827">Rasp. Pi</text>
+            <text x="214" y="37" font-size="13" fill="#dc2626">↔</text>
+            <rect x="229" y="12" width="88" height="42" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="273" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">3. WiFi /</text><text x="273" y="47" text-anchor="middle" font-size="10" fill="#9d174d">MQTT</text>
+            <text x="321" y="37" font-size="13" fill="#dc2626">↔</text>
+            <rect x="336" y="12" width="92" height="42" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="382" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">4. Cloud</text><text x="382" y="47" text-anchor="middle" font-size="10" fill="#166534">&amp; Analytics</text>
+            <text x="432" y="37" font-size="13" fill="#dc2626">↔</text>
+            <rect x="447" y="12" width="84" height="42" rx="6" fill="#eff6ff" stroke="#1d4ed8"/><text x="489" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">5. Mobile</text><text x="489" y="47" text-anchor="middle" font-size="10" fill="#1e40af">App UI</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Modular layers make debugging easy; cloud scales smoothly for thousands of sensors.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Network failure breaks cloud alerts unless local edge rules are programmed.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Every IoT solution — from college prototypes to smart factories — is built on these 5 fundamental blocks.</div>
+      </div>
+
+      <!-- PAGE 4 -->
+      <div class="page ruled-paper" data-idx="5">
+        <div class="nb-top"><span class="unit-pill">Unit 1.0: Various IoT Cloud Platforms</span><span class="page-stamp">Page: 04</span></div>
+        <div class="q-black">Q. Explain Various Platforms for IoT (AWS, Microsoft Azure, GCP). (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> An <strong>IoT Platform</strong> is a <span class="hl-y">cloud-based middleware service</span> that securely connects millions of IoT devices, stores telemetry, and runs automated rules &amp; AI analytics.</div>
+        <div class="h-black">Major IoT Platforms &amp; Real Examples:</div>
+        <ul>
+          <li><strong>1. AWS IoT Core (Amazon):</strong> Connects billions of devices via MQTT/TLS; routes messages using <em>AWS Rules Engine</em> to S3, Lambda &amp; DynamoDB. <em>Ex:</em> Philips Hue smart lights &amp; iRobot Roomba.</li>
+          <li><strong>2. Microsoft Azure IoT Hub:</strong> Bi-directional encrypted messaging, <strong>Azure Digital Twins</strong> (3D virtual factory models) &amp; Power BI dashboards. <em>Ex:</em> Rolls-Royce jet engine monitoring.</li>
+          <li><strong>3. Google Cloud Platform (GCP):</strong> Uses <strong>Cloud Pub/Sub</strong> (fast ingestion), <strong>BigQuery</strong> (analytics) &amp; <strong>Vertex AI</strong> for ML predictions.</li>
+          <li><strong>4. Student-Friendly Platforms:</strong> <strong>ThingSpeak, Blynk, Arduino Cloud</strong> (free dashboards for college projects).</li>
+        </ul>
+        <table class="hw-table">
+          <thead><tr><th>Platform</th><th>Core IoT Services</th><th>Best Strength</th></tr></thead>
+          <tbody>
+            <tr><td><strong>AWS IoT</strong></td><td>IoT Core, Lambda, S3, DynamoDB</td><td>Largest ecosystem &amp; serverless automation</td></tr>
+            <tr><td><strong>Azure IoT</strong></td><td>IoT Hub, Digital Twins, Power BI</td><td>Strong enterprise &amp; industrial integration</td></tr>
+            <tr><td><strong>GCP</strong></td><td>Pub/Sub, Dataflow, BigQuery, AI</td><td>Fastest real-time Big Data &amp; ML analytics</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Cloud Platform Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="62" viewBox="0 0 520 62">
+            <rect x="8" y="12" width="130" height="36" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="73" y="34" text-anchor="middle" font-size="11.5" fill="#111827">IoT Devices (ESP32)</text>
+            <text x="145" y="35" font-size="14" fill="#dc2626">→</text>
+            <rect x="165" y="12" width="175" height="36" rx="6" fill="#fef08a" stroke="#111827"/><text x="252" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">AWS / Azure / GCP Hub</text>
+            <text x="347" y="35" font-size="14" fill="#dc2626">→</text>
+            <rect x="368" y="12" width="142" height="36" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="439" y="34" text-anchor="middle" font-size="11.5" fill="#111827">DB + AI + Dashboard</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Zero server hardware cost, strong TLS security, auto-scales globally.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Monthly cloud bills grow with high data volume; vendor lock-in risk.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> AWS, Azure, and GCP simplify building secure, global-scale IoT backends without managing physical servers.</div>
+      </div>
+
+      <!-- PAGE 5 -->
+      <div class="page ruled-paper" data-idx="6">
+        <div class="nb-top"><span class="unit-pill">Unit 1.0: Python Programming for IoT</span><span class="page-stamp">Page: 05</span></div>
+        <div class="q-black">Q. Why Is Python Used in IoT? Write a Python Sensor Alert Program. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Python</strong> is the <span class="hl-y">most popular high-level language for IoT</span> (on <strong>Raspberry Pi</strong> &amp; <strong>MicroPython</strong> boards) thanks to its simple syntax and rich hardware/cloud libraries.</div>
+        <div class="h-black">Key IoT Python Libraries:</div>
+        <ul>
+          <li><code>RPi.GPIO</code> / <code>gpiozero</code> → Controls LEDs, relays, motors &amp; sensors on Raspberry Pi GPIO pins.</li>
+          <li><code>paho-mqtt</code> → Publishes/subscribes lightweight MQTT messages to AWS/Azure/HiveMQ.</li>
+          <li><code>requests</code> / <code>pandas</code> → Sends JSON data to REST APIs (ThingSpeak) &amp; analyzes logs.</li>
+        </ul>
+        <div class="code-box">import time
+import paho.mqtt.client as mqtt       # IoT MQTT Library
+
+client = mqtt.Client()
+client.connect("broker.hivemq.com", 1883)
+
+while True:
+    temp = 36.5                       # Simulated DHT11 Temp Sensor (°C)
+    if temp &gt; 35.0:
+        client.publish("room49/alert", f"HIGH TEMP: {temp}C - Turn ON Fan!")
+        print("Alert Sent:", temp)
+    time.sleep(5)</div>
+        <div class="h-black">2D Python-IoT Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="58" viewBox="0 0 510 58">
+            <rect x="8" y="10" width="118" height="36" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="67" y="33" text-anchor="middle" font-size="11.5" fill="#111827">DHT11 Sensor</text>
+            <text x="132" y="33" font-size="14" fill="#dc2626">→</text>
+            <rect x="150" y="10" width="165" height="36" rx="6" fill="#fef08a" stroke="#111827"/><text x="232" y="33" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Python Script (Pi/MQTT)</text>
+            <text x="321" y="33" font-size="14" fill="#dc2626">→</text>
+            <rect x="340" y="10" width="160" height="36" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="420" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Cloud &amp; Phone Alert</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Easy to read/debug, huge AI+IoT library support, rapid college prototyping.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Slower &amp; uses more RAM than C/C++ (full Python won't fit on 2 KB Arduino Uno).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Python bridges IoT hardware sensors with cloud APIs and Machine Learning models using minimal code.</div>
+      </div>
+
+      <!-- PAGE 6 -->
+      <div class="page ruled-paper" data-idx="7">
+        <div class="nb-top"><span class="unit-pill">Unit 1.0: IoT Software, OS &amp; Protocols</span><span class="page-stamp">Page: 06</span></div>
+        <div class="q-black">Q. Explain IoT Software Stack, Operating Systems &amp; Protocols. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>IoT Software</strong> includes all <span class="hl-y">embedded OS/firmware, middleware, and network protocols</span> that let hardware sensors safely collect, process, and transmit data.</div>
+        <div class="h-black">3 Main Layers of IoT Software:</div>
+        <ol>
+          <li><strong>Device OS &amp; Firmware:</strong> Runs on boards — <strong>Arduino IDE (C++)</strong>, <strong>MicroPython</strong>, <strong>FreeRTOS / RIOT OS</strong> (for tiny low-RAM devices), and <strong>Raspberry Pi OS (Linux)</strong>.</li>
+          <li><strong>IoT Middleware:</strong> Connects sensors to Cloud apps visually (e.g., <strong>Node-RED</strong>, Eclipse Kura).</li>
+          <li><strong>Dashboards &amp; Security Software:</strong> Grafana, Blynk, ThingSpeak + TLS/SSL encryption.</li>
+        </ol>
+        <table class="hw-table">
+          <thead><tr><th>IoT Protocol</th><th>Pattern</th><th>Key Feature &amp; Use Case</th></tr></thead>
+          <tbody>
+            <tr><td><span class="hl-g">MQTT (★ Imp)</span></td><td>Pub / Sub</td><td>Ultra-lightweight, saves battery; best for ESP32 sensors.</td></tr>
+            <tr><td><strong>CoAP</strong></td><td>Req / Resp (UDP)</td><td>Built for tiny constrained devices on low-power networks.</td></tr>
+            <tr><td><strong>HTTP / REST</strong></td><td>Req / Resp (TCP)</td><td>Standard web API; heavier RAM &amp; battery usage.</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D IoT Software Stack Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="500" height="106" viewBox="0 0 500 106">
+            <rect x="20" y="4" width="460" height="23" rx="5" fill="#fce7f3" stroke="#111827"/><text x="250" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">4. Application &amp; Dashboard: [ Blynk / Grafana / Mobile App ]</text>
+            <rect x="20" y="30" width="460" height="23" rx="5" fill="#fef9c3" stroke="#111827"/><text x="250" y="46" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">3. Middleware &amp; Broker: [ Node-RED / AWS / MQTT Broker ]</text>
+            <rect x="20" y="56" width="460" height="23" rx="5" fill="#dbeafe" stroke="#111827"/><text x="250" y="72" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">2. Protocols: [ MQTT / CoAP / HTTP / TLS Security ]</text>
+            <rect x="20" y="82" width="460" height="23" rx="5" fill="#dcfce7" stroke="#111827"/><text x="250" y="98" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">1. Device OS: [ FreeRTOS / MicroPython / Raspberry Pi OS ]</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Open-source OS (FreeRTOS/Linux) &amp; lightweight MQTT extend sensor battery life.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Incompatible software standards across vendors complicate multi-device integration.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Combining lightweight RTOS firmware with MQTT/CoAP protocols guarantees reliable, power-efficient IoT software.</div>
+      </div>
+
+      <!-- PAGE 7 -->
+      <div class="page ruled-paper" data-idx="8">
+        <div class="nb-top"><span class="unit-pill">Unit 1.0: Applications of IoT</span><span class="page-stamp">Page: 07</span></div>
+        <div class="q-black">Q. Explain Major Real-World Applications of IoT Across Industries. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Applications of IoT</strong> refer to the practical deployment of smart sensors, wireless connectivity, and cloud automation in homes, healthcare, farms, cities, and factories.</div>
+        <div class="h-black">5 Major Real-World IoT Domains:</div>
+        <table class="hw-table">
+          <thead><tr><th>Domain</th><th>Sensors / Devices Used</th><th>Real-Life Example &amp; Benefit</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1. Smart Home</strong></td><td>PIR Motion, Temp, Relay</td><td><strong>Alexa / Smart AC:</strong> Auto-off lights &amp; saves 30% electricity.</td></tr>
+            <tr><td><strong>2. Healthcare</strong></td><td>ECG, SpO2, Heart Rate</td><td><strong>Apple Watch / ICU:</strong> 24×7 remote patient &amp; emergency alerts.</td></tr>
+            <tr><td><strong>3. Agriculture</strong></td><td>Soil Moisture, Rain</td><td>Auto-controls farm water pumps → saves 40% water &amp; boosts crops.</td></tr>
+            <tr><td><strong>4. Smart Cities</strong></td><td>Ultrasonic, Camera, GPS</td><td>Smart traffic lights &amp; smart dustbins alerting municipal trucks.</td></tr>
+            <tr><td><strong>5. Industrial (IIoT)</strong></td><td>Vibration, Current, Temp</td><td>Factory CNC machines predict faults <em>before</em> breakdown!</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D IoT Domain Hub Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="490" height="92" viewBox="0 0 490 92">
+            <rect x="180" y="30" width="130" height="32" rx="8" fill="#fef08a" stroke="#111827" stroke-width="2"/><text x="245" y="51" text-anchor="middle" font-size="13" font-weight="700" fill="#dc2626">IoT WORLD</text>
+            <rect x="10" y="8" width="130" height="24" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="75" y="24" text-anchor="middle" font-size="11.5" fill="#111827">Smart Home</text>
+            <rect x="10" y="58" width="130" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="75" y="74" text-anchor="middle" font-size="11.5" fill="#111827">Smart Farming</text>
+            <rect x="350" y="8" width="130" height="24" rx="5" fill="#fce7f3" stroke="#be185d"/><text x="415" y="24" text-anchor="middle" font-size="11.5" fill="#111827">Healthcare (IoMT)</text>
+            <rect x="350" y="58" width="130" height="24" rx="5" fill="#fef9c3" stroke="#ca8a04"/><text x="415" y="74" text-anchor="middle" font-size="11.5" fill="#111827">Smart City &amp; IIoT</text>
+            <line x1="140" y1="20" x2="180" y2="40" stroke="#dc2626" stroke-width="1.5"/><line x1="140" y1="70" x2="180" y2="52" stroke="#dc2626" stroke-width="1.5"/>
+            <line x1="350" y1="20" x2="310" y2="40" stroke="#dc2626" stroke-width="1.5"/><line x1="350" y1="70" x2="310" y2="52" stroke="#dc2626" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Saves water &amp; energy, speeds up medical care, raises industrial efficiency.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> High dependence on internet/power; cyber-security risks on public grids.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> IoT transforms homes, healthcare, farming, cities, and factories into automated, intelligent ecosystems.</div>
+      </div>
+
+      <!-- PAGE 8 -->
+      <div class="page ruled-paper" data-idx="9">
+        <div class="nb-top"><span class="unit-pill">Unit 2.0: Basics of Communication Protocols</span><span class="page-stamp">Page: 08</span></div>
+        <div class="q-black">Q. What are IoT Communication Protocols? Explain Their Types &amp; Applications. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>IoT Communication Protocols</strong> are <span class="hl-y">standardized rules and formats</span> that enable IoT sensors, gateways, and cloud servers to connect and exchange data reliably.</div>
+        <div class="h-black">Why Special Protocols &amp; Main Categories:</div>
+        <ul>
+          <li><strong>Why Not Heavy Desktop Protocols?</strong> IoT nodes have tiny RAM, slow CPUs &amp; small batteries — they need ultra-lightweight, low-power protocols!</li>
+          <li><strong>1. Network / Physical Protocols:</strong> Handle wireless radio signals (<span class="hl-g">BLE, ZigBee, LoRa, Wi-Fi</span>).</li>
+          <li><strong>2. Application / Data Protocols:</strong> Format and deliver sensor messages (<span class="hl-p">MQTT, CoAP, HTTP</span>).</li>
+          <li><strong>Real-Life Example:</strong> Your smartwatch uses <strong>BLE</strong> (low battery) to talk to your phone, while your phone uses <strong>Wi-Fi + MQTT</strong> to send heart logs to the cloud!</li>
+        </ul>
+        <div class="h-black">2D Classification Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="92" viewBox="0 0 520 92">
+            <rect x="155" y="4" width="210" height="28" rx="6" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="260" y="23" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">IoT COMMUNICATION PROTOCOLS</text>
+            <line x1="260" y1="32" x2="260" y2="44" stroke="#dc2626" stroke-width="2"/>
+            <line x1="130" y1="44" x2="390" y2="44" stroke="#dc2626" stroke-width="2"/>
+            <line x1="130" y1="44" x2="130" y2="54" stroke="#dc2626" stroke-width="2"/><line x1="390" y1="44" x2="390" y2="54" stroke="#dc2626" stroke-width="2"/>
+            <rect x="20" y="54" width="220" height="32" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="130" y="74" text-anchor="middle" font-size="11.5" fill="#111827">Wireless: BLE, ZigBee, LoRa, Wi-Fi</text>
+            <rect x="280" y="54" width="220" height="32" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="390" y="74" text-anchor="middle" font-size="11.5" fill="#111827">Data / App: MQTT, CoAP, HTTP</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Saves battery life (months/years), supports short &amp; km-long range, ensures reliable delivery.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Incompatible protocols (e.g., ZigBee vs Wi-Fi) need a Gateway bridge to talk.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Selecting the right protocol balances **Range, Speed, and Battery Power** for any IoT application.</div>
+      </div>
+
+      <!-- PAGE 9 -->
+      <div class="page ruled-paper" data-idx="10">
+        <div class="nb-top"><span class="unit-pill">Unit 2.0: MQTT Protocol</span><span class="page-stamp">Page: 09</span></div>
+        <div class="q-black">Q. Explain MQTT Protocol, Pub-Sub Architecture, QoS &amp; Applications. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>MQTT (Message Queuing Telemetry Transport)</strong> is an <span class="hl-y">ultra-lightweight Publish-Subscribe messaging protocol</span> over TCP/IP built for low-bandwidth IoT devices.</div>
+        <div class="h-black">Pub-Sub Architecture &amp; QoS Levels:</div>
+        <ol>
+          <li><strong>Publisher:</strong> Sensor/board (ESP32) sending data to a Topic (e.g., <code>home/temp</code>).</li>
+          <li><strong>MQTT Broker:</strong> Central server (<strong>Mosquitto, HiveMQ, AWS IoT</strong>) that routes topic messages to subscribers.</li>
+          <li><strong>Subscriber:</strong> Mobile app or dashboard listening to that Topic for instant updates.</li>
+          <li><strong>QoS Levels:</strong> <span class="hl-g">QoS 0</span> (At most once — fastest), <span class="hl-y">QoS 1</span> (At least once), <span class="hl-p">QoS 2</span> (Exactly once — safest).</li>
+        </ol>
+        <p class="ans-blue"><strong>Real Applications:</strong> Facebook Messenger chat delivery, Smart Home bulbs, ESP32 live weather stations &amp; connected cars.</p>
+        <div class="h-black">2D Publish-Subscribe Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="530" height="64" viewBox="0 0 530 64">
+            <rect x="6" y="12" width="142" height="40" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="77" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Publisher (ESP32)</text><text x="77" y="45" text-anchor="middle" font-size="10" fill="#1e40af">Pub("room/temp", 34)</text>
+            <text x="155" y="37" font-size="14" fill="#dc2626">→</text>
+            <rect x="174" y="10" width="165" height="44" rx="8" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="256" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">MQTT BROKER</text><text x="256" y="46" text-anchor="middle" font-size="10.5" fill="#111827">(Mosquitto / HiveMQ)</text>
+            <text x="346" y="37" font-size="14" fill="#dc2626">→</text>
+            <rect x="366" y="12" width="156" height="40" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="444" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Subscriber (App)</text><text x="444" y="45" text-anchor="middle" font-size="10" fill="#166534">Sub("room/temp")</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Tiny 2-byte header saves battery &amp; data; scales to millions of devices with QoS.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Central Broker can be a single failure point; TCP uses more power than UDP CoAP.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> MQTT is the #1 messaging standard for fast, lightweight sensor-to-cloud IoT communication.</div>
+      </div>
+
+      <!-- PAGE 10 -->
+      <div class="page ruled-paper" data-idx="11">
+        <div class="nb-top"><span class="unit-pill">Unit 2.0: Bluetooth Low Energy (BLE)</span><span class="page-stamp">Page: 10</span></div>
+        <div class="q-black">Q. Explain Bluetooth Low Energy (BLE), Features &amp; Applications. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>BLE (Bluetooth Low Energy / Bluetooth Smart)</strong> is a <span class="hl-y">short-range, ultra-low-power wireless protocol</span> (2.4 GHz) built to send small IoT packets on a coin battery for months or years.</div>
+        <div class="h-black">How BLE Works &amp; Real-Life Applications:</div>
+        <ul>
+          <li><strong>Power Secret:</strong> Unlike Classic Bluetooth (always ON), <span class="hl-g">BLE sleeps most of the time</span> and wakes for milliseconds only to send data!</li>
+          <li><strong>Specs:</strong> Frequency = <strong>2.4 GHz</strong> | Range = <strong>10–100 m</strong> | Speed = <strong>1–2 Mbps</strong>.</li>
+          <li><strong>Applications:</strong> 1) <strong>Wearables:</strong> Apple Watch, Mi Band, AirPods | 2) <strong>Healthcare:</strong> Wireless oximeters, BP monitors | 3) <strong>Smart Tags:</strong> Apple AirTag, JioTag, Mall beacons.</li>
+        </ul>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Classic Bluetooth</th><th>Bluetooth Low Energy (BLE)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Battery Life</strong></td><td>Hours / Days (High power)</td><td><span class="hl-g">Months / Years (Coin cell)</span></td></tr>
+            <tr><td><strong>Best Use Case</strong></td><td>Audio streaming, file sharing</td><td><strong>Wearables, health &amp; IoT sensors</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D BLE Communication Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="58" viewBox="0 0 510 58">
+            <rect x="8" y="12" width="155" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="85" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Smartwatch / BLE Tag</text>
+            <text x="235" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">← 2.4 GHz (10-50m) →</text>
+            <rect x="305" y="12" width="195" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="402" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Smartphone App → Cloud</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Built into all smartphones, super cheap chips, runs years on a small CR2032 cell.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Short range (&lt;100m), low speed (no HD video), needs phone/gateway for internet.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> BLE is the undisputed leader for personal wearables, medical sensors, and low-energy smart tags.</div>
+      </div>
+
+      <!-- PAGE 11 -->
+      <div class="page ruled-paper" data-idx="12">
+        <div class="nb-top"><span class="unit-pill">Unit 2.0: ZigBee Protocol (Mesh)</span><span class="page-stamp">Page: 11</span></div>
+        <div class="q-black">Q. Explain ZigBee Protocol (IEEE 802.15.4), Mesh Network &amp; Applications. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>ZigBee</strong> is a <span class="hl-y">low-power wireless mesh networking protocol</span> based on <strong>IEEE 802.15.4</strong>, designed for smart home and building automation.</div>
+        <div class="h-black">3 Device Roles in ZigBee &amp; Applications:</div>
+        <ol>
+          <li><strong>ZigBee Coordinator (1 per network):</strong> Root brain that creates the network &amp; manages security keys.</li>
+          <li><strong>ZigBee Router:</strong> Passes/hops messages from distant nodes to the Coordinator (extends house range!).</li>
+          <li><strong>ZigBee End Device:</strong> Battery-powered sensor/switch that sleeps to save power.</li>
+        </ol>
+        <p class="ans-blue"><strong>Specs &amp; Applications:</strong> 2.4 GHz | 250 kbps | Range: 10–100m/hop | Supports <strong>65,000 nodes</strong>! <em>Real Ex:</em> <strong>Philips Hue Smart Bulbs</strong>, smart locks, smart meters &amp; hospital call buttons.</p>
+        <div class="h-black">2D ZigBee Mesh Topology Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="82" viewBox="0 0 520 82">
+            <rect x="10" y="22" width="115" height="36" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="67" y="44" text-anchor="middle" font-size="11" fill="#111827">End Device (Sensor)</text>
+            <line x1="125" y1="32" x2="185" y2="20" stroke="#dc2626" stroke-width="1.6"/>
+            <line x1="125" y1="48" x2="185" y2="60" stroke="#dc2626" stroke-width="1.6"/>
+            <rect x="185" y="6" width="120" height="28" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="245" y="24" text-anchor="middle" font-size="11" fill="#111827">Router 1 (Bulb)</text>
+            <rect x="185" y="46" width="120" height="28" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="245" y="64" text-anchor="middle" font-size="11" fill="#111827">Router 2 (Plug)</text>
+            <line x1="305" y1="20" x2="365" y2="36" stroke="#dc2626" stroke-width="1.6"/>
+            <line x1="305" y1="60" x2="365" y2="44" stroke="#dc2626" stroke-width="1.6"/>
+            <rect x="365" y="20" width="145" height="40" rx="7" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="437" y="38" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Coordinator Hub</text><text x="437" y="54" text-anchor="middle" font-size="10" fill="#dc2626">(Self-Healing Mesh!)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Self-healing mesh (auto-reroutes if 1 bulb fails), supports 65,000 nodes, 2–5 yr battery.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Phones lack built-in ZigBee (needs Hub/Bridge); low speed (250 kbps).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> ZigBee's self-healing mesh and low power make it ideal for reliable whole-home automation.</div>
+      </div>
+
+      <!-- PAGE 12 -->
+      <div class="page ruled-paper" data-idx="13">
+        <div class="nb-top"><span class="unit-pill">Unit 2.0: LoRa &amp; LoRaWAN Protocol</span><span class="page-stamp">Page: 12</span></div>
+        <div class="q-black">Q. Explain LoRa Protocol, Star-of-Stars Architecture &amp; Applications. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>LoRa (Long Range)</strong> is an <span class="hl-y">ultra-long-range, low-power LPWAN</span> radio technology (Chirp Spread Spectrum) sending tiny packets up to <strong>10–15 km</strong> on a 5–10 year battery!</div>
+        <div class="h-black">LoRa Architecture &amp; Real-Life Applications:</div>
+        <ol>
+          <li><strong>End Nodes (Sensors):</strong> Battery-powered farm/city sensors transmitting small telemetry (temp, moisture, GPS).</li>
+          <li><strong>LoRa Gateways:</strong> Receive radio signals miles away from thousands of nodes &amp; forward via 4G/Ethernet.</li>
+          <li><strong>Network &amp; App Server:</strong> Filters duplicates, decrypts data, and displays live alerts.</li>
+        </ol>
+        <p class="ans-blue"><strong>Specs &amp; Applications:</strong> Unlicensed Sub-GHz (<strong>865–867 MHz in India</strong>) | Range: <strong>10–15 km (Rural) / 2–5 km (City)</strong> | Speed: 0.3–50 kbps.<br/>
+        <em>Applications:</em> Smart Agriculture (huge farms without Wi-Fi), Flood River Sensors, Smart Streetlights &amp; Container Tracking.</p>
+        <div class="h-black">2D Star-of-Stars Architecture Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="72" viewBox="0 0 520 72">
+            <rect x="8" y="6" width="125" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="70" y="22" text-anchor="middle" font-size="11" fill="#111827">Farm Soil Sensor</text>
+            <rect x="8" y="40" width="125" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="70" y="56" text-anchor="middle" font-size="11" fill="#111827">Smart Water Meter</text>
+            <line x1="133" y1="18" x2="205" y2="33" stroke="#dc2626" stroke-width="1.6"/><line x1="133" y1="52" x2="205" y2="39" stroke="#dc2626" stroke-width="1.6"/>
+            <rect x="205" y="14" width="130" height="42" rx="7" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="270" y="33" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">LoRa Gateway</text><text x="270" y="49" text-anchor="middle" font-size="10" fill="#dc2626">(10–15 km Radio)</text>
+            <text x="342" y="40" font-size="14" fill="#dc2626">→</text>
+            <rect x="362" y="16" width="148" height="38" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="436" y="39" text-anchor="middle" font-size="11.5" fill="#111827">Network Server &amp; App</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Huge 15 km range, penetrates thick walls, 5–10 yr battery, zero SIM fee.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Very low data rate (&lt;50 kbps — cannot send audio/photos/video).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> LoRa is unbeatable for long-range, battery-powered rural agriculture and smart city infrastructure.</div>
+      </div>
+
+      <!-- PAGE 13 -->
+      <div class="page ruled-paper" data-idx="14">
+        <div class="nb-top"><span class="unit-pill">Unit 2.0: Wi-Fi &amp; Protocol Comparison</span><span class="page-stamp">Page: 13</span></div>
+        <div class="q-black">Q. Explain Wi-Fi in IoT &amp; Compare MQTT, BLE, ZigBee, LoRa &amp; Wi-Fi. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Wi-Fi (IEEE 802.11)</strong> is a <span class="hl-y">high-speed wireless LAN protocol</span> (2.4 / 5 GHz) connecting IoT devices directly to routers at <strong>54+ Mbps</strong>. <em>Ex:</em> CCTV cameras, Smart TVs, ESP32 home apps.</div>
+        <table class="hw-table" style="font-size:12.6px;">
+          <thead><tr><th>Protocol</th><th>Standard / Layer</th><th>Range</th><th>Speed</th><th>Power</th><th>Best Application</th></tr></thead>
+          <tbody>
+            <tr><td><strong>MQTT</strong></td><td>App Layer (TCP)</td><td>Global (Web)</td><td>Light packets</td><td><span class="hl-g">Very Low</span></td><td>Sensor-to-Cloud messaging</td></tr>
+            <tr><td><strong>BLE</strong></td><td>IEEE 802.15.1</td><td>10 – 100 m</td><td>1 – 2 Mbps</td><td><span class="hl-g">Ultra-Low</span></td><td>Smartwatches, earbuds, tags</td></tr>
+            <tr><td><strong>ZigBee</strong></td><td>IEEE 802.15.4</td><td>10 – 100m (Mesh)</td><td>250 kbps</td><td>Low</td><td>Smart home bulbs &amp; locks</td></tr>
+            <tr><td><strong>LoRa</strong></td><td>LPWAN (Sub-GHz)</td><td><span class="hl-y">10 – 15 km</span></td><td>0.3–50 kbps</td><td><span class="hl-g">Ultra-Low</span></td><td>Smart farms, smart cities</td></tr>
+            <tr><td><strong>Wi-Fi</strong></td><td>IEEE 802.11</td><td>30 – 100 m</td><td><span class="hl-y">54+ Mbps</span></td><td><span class="hl-p">High</span></td><td>CCTV cameras, Smart TVs</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Range vs. Speed Chart Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="84" viewBox="0 0 510 84">
+            <line x1="55" y1="68" x2="480" y2="68" stroke="#111827" stroke-width="2"/><line x1="55" y1="68" x2="55" y2="8" stroke="#111827" stroke-width="2"/>
+            <text x="265" y="81" text-anchor="middle" font-size="11" fill="#111827">Wireless Range (Meters → Kilometers) →</text>
+            <text x="22" y="40" text-anchor="middle" font-size="10.5" fill="#111827" transform="rotate(-90 22,40)">Speed</text>
+            <rect x="75" y="10" width="110" height="22" rx="5" fill="#fce7f3" stroke="#be185d"/><text x="130" y="25" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">Wi-Fi (Mbps/Video)</text>
+            <rect x="115" y="38" width="85" height="22" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="157" y="53" text-anchor="middle" font-size="11" fill="#111827">BLE</text>
+            <rect x="225" y="38" width="105" height="22" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="277" y="53" text-anchor="middle" font-size="11" fill="#111827">ZigBee (Mesh)</text>
+            <rect x="355" y="38" width="118" height="22" rx="5" fill="#fef08a" stroke="#111827" stroke-width="1.6"/><text x="414" y="53" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">LoRa (10–15 km)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Wi-Fi Pros:</strong> Fastest speed (HD video), built into every router (no extra hub needed).</div>
+          <div class="pc-box pc-con"><strong>❌ Wi-Fi Cons:</strong> High battery drain &amp; limited ~50m indoor range compared to LoRa.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Use <strong>Wi-Fi</strong> for wall-powered video, <strong>BLE</strong> for wearables, <strong>ZigBee</strong> for smart homes, <strong>LoRa</strong> for 15 km farms, and <strong>MQTT</strong> for cloud messaging!</div>
+      </div>
+
+      <!-- PAGE 14 -->
+      <div class="page ruled-paper" data-idx="15">
+        <div class="nb-top"><span class="unit-pill">Unit 3.0: Sensors, Actuators &amp; Transducers</span><span class="page-stamp">Page: 14</span></div>
+        <div class="q-black">Q. Define Sensors, Actuators &amp; Transducers with Real Examples. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Transducer</strong> converts one energy form to another. A <strong>Sensor</strong> (<span class="hl-y">input transducer</span>) converts physical heat/light into electrical signals; an <strong>Actuator</strong> (<span class="hl-g">output transducer</span>) converts electrical signals into physical action!</div>
+        <p class="ans-blue"><strong>Real Example (Smart AC):</strong> <strong>Temp Sensor</strong> reads <code>34°C</code> → Microcontroller → <strong>Relay/Compressor Actuator</strong> cools room.<br/><strong>Human Analogy:</strong> Sensors = Eyes/Ears (Input) | Controller = Brain | Actuators = Hands/Legs (Output).</p>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Sensor (Input)</th><th>Actuator (Output)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Conversion</strong></td><td>Physical change → Electrical signal</td><td>Electrical command → Physical motion/action</td></tr>
+            <tr><td><strong>Examples</strong></td><td>DHT11 (Temp), PIR (Motion), MQ-2 (Gas)</td><td>Servo Motor, Relay, DC Water Pump, Buzzer</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Closed-Loop Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="530" height="58" viewBox="0 0 530 58">
+            <rect x="6" y="12" width="110" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="61" y="33" text-anchor="middle" font-size="11.5" fill="#111827">SENSOR (Input)</text>
+            <text x="122" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="140" y="12" width="120" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="200" y="33" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">MCU (ESP32/Pi)</text>
+            <text x="266" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="284" y="12" width="120" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="344" y="33" text-anchor="middle" font-size="11.5" fill="#111827">ACTUATOR (Relay)</text>
+            <text x="410" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="428" y="12" width="95" height="34" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="475" y="33" text-anchor="middle" font-size="11.5" fill="#111827">Fan ON!</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Full closed-loop automation without human touch; fast &amp; accurate sensing.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Sensors face calibration drift; actuators need external power/relays.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Sensors act as the eyes and Actuators act as the hands of every smart IoT device.</div>
+      </div>
+
+      <!-- PAGE 15 -->
+      <div class="page ruled-paper" data-idx="16">
+        <div class="nb-top"><span class="unit-pill">Unit 3.0: Classifications of Sensors</span><span class="page-stamp">Page: 15</span></div>
+        <div class="q-black">Q. Explain the Classifications of IoT Sensors with Examples. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Sensor Classification</strong> categorizes sensors by <span class="hl-y">Power Requirement, Output Signal Type, and Physical Parameter</span> so engineers choose accurately.</div>
+        <ol>
+          <li><strong>Based on Power:</strong> <strong>Active Sensors</strong> need external power (<em>Ultrasonic HC-SR04, LiDAR</em>) vs. <strong>Passive Sensors</strong> generate signal directly (<em>Thermocouple, LDR, PIR</em>).</li>
+          <li><strong>Based on Signal:</strong> <strong>Analog Sensors</strong> give continuous voltage <code>0–5V</code> (<em>LM35, Soil Moisture, MQ-2</em>) vs. <strong>Digital Sensors</strong> give discrete <code>0/1</code> binary data (<em>DHT11, IR</em>).</li>
+          <li><strong>By Parameter:</strong> Temp (DHT11), Motion (PIR), Distance (Ultrasonic), Gas (MQ-2), Light (LDR).</li>
+        </ol>
+        <div class="h-black">2D Sensor Classification Tree Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="90" viewBox="0 0 520 90">
+            <rect x="190" y="4" width="140" height="26" rx="6" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="260" y="22" text-anchor="middle" font-size="12" font-weight="700" fill="#111827">IoT SENSORS</text>
+            <line x1="260" y1="30" x2="260" y2="44" stroke="#dc2626" stroke-width="2"/>
+            <line x1="85" y1="44" x2="435" y2="44" stroke="#dc2626" stroke-width="2"/>
+            <line x1="85" y1="44" x2="85" y2="55" stroke="#dc2626" stroke-width="2"/><line x1="260" y1="44" x2="260" y2="55" stroke="#dc2626" stroke-width="2"/><line x1="435" y1="44" x2="435" y2="55" stroke="#dc2626" stroke-width="2"/>
+            <rect x="12" y="55" width="146" height="29" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="85" y="74" text-anchor="middle" font-size="11" fill="#111827">Power: Active / Passive</text>
+            <rect x="187" y="55" width="146" height="29" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="260" y="74" text-anchor="middle" font-size="11" fill="#111827">Signal: Analog / Digital</text>
+            <rect x="362" y="55" width="146" height="29" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="435" y="74" text-anchor="middle" font-size="11" fill="#111827">Temp, PIR, Gas, Light</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Digital sensors resist electrical noise; passive sensors save battery life.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Analog sensors require an ADC pin (unavailable natively on Raspberry Pi).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Proper sensor selection balances ADC pin availability, noise immunity, and battery consumption.</div>
+      </div>
+
+      <!-- PAGE 16 -->
+      <div class="page ruled-paper" data-idx="17">
+        <div class="nb-top"><span class="unit-pill">Unit 3.0: IoT Development Boards</span><span class="page-stamp">Page: 16</span></div>
+        <div class="q-black">Q. Classify Development Boards &amp; Compare Arduino, NodeMCU, ESP32 &amp; Raspberry Pi. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> An <strong>IoT Development Board</strong> is a ready PCB combining an MCU/CPU, GPIO pins, and USB programmer to build and test IoT prototypes quickly.</div>
+        <p class="ans-blue"><strong>2 Classifications:</strong> 1) <strong>Microcontroller Boards (MCU)</strong> — no OS, low power (Arduino, NodeMCU, ESP32) | 2) <strong>Single-Board Computers (SBC)</strong> — run Linux + Python + AI (Raspberry Pi).</p>
+        <table class="hw-table" style="font-size:12.6px;">
+          <thead><tr><th>Board</th><th>Type</th><th>WiFi / BLE</th><th>Logic V</th><th>Best Use Case</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Arduino Uno</strong></td><td>MCU (8-bit)</td><td>❌ None</td><td>5V</td><td>Beginner sensors &amp; motors</td></tr>
+            <tr><td><strong>NodeMCU</strong></td><td>MCU (32-bit)</td><td>✅ <strong>Wi-Fi</strong></td><td>3.3V</td><td>Cheap Wi-Fi smart home &amp; web</td></tr>
+            <tr><td><strong>ESP32</strong></td><td>Dual-Core MCU</td><td>✅ <strong>Wi-Fi + BLE</strong></td><td>3.3V</td><td>Advanced low-power IoT</td></tr>
+            <tr><td><strong>Raspberry Pi</strong></td><td>SBC (Linux)</td><td>✅ <strong>WiFi+BLE+Eth</strong></td><td>3.3V GPIO</td><td>Python, Edge AI, CCTV, Broker</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Classification Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="510" height="62" viewBox="0 0 510 62">
+            <rect x="10" y="12" width="230" height="38" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="125" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">MCU Boards (No OS)</text><text x="125" y="45" text-anchor="middle" font-size="10.5" fill="#1e40af">Arduino • NodeMCU • ESP32</text>
+            <text x="255" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#dc2626">|</text>
+            <rect x="270" y="12" width="230" height="38" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="385" y="30" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">SBC Boards (Linux OS)</text><text x="385" y="45" text-anchor="middle" font-size="10.5" fill="#166534">Raspberry Pi 4/5 • BeagleBone</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Plug-and-play USB coding, huge open-source libraries, low cost (₹250–₹4000).</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Raspberry Pi uses higher power &amp; cost; Arduino Uno lacks built-in Wi-Fi.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Use NodeMCU/ESP32 for cheap wireless sensor nodes and Raspberry Pi for Python AIoT gateways.</div>
+      </div>
+
+      <!-- PAGE 17 -->
+      <div class="page ruled-paper" data-idx="18">
+        <div class="nb-top"><span class="unit-pill">Unit 3.0: Wireless Networks &amp; WiFi Libraries</span><span class="page-stamp">Page: 17</span></div>
+        <div class="q-black">Q. Explain Basics of Wireless Networks and IoT WiFi Libraries. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Wireless Networks</strong> carry IoT data over radio waves without cables, while <strong>WiFi Libraries</strong> provide ready functions to connect boards to routers and host web/MQTT servers.</div>
+        <p class="ans-blue"><strong>4 Wireless Types:</strong> <strong>WPAN</strong> (10–100m: BLE/ZigBee) | <strong>WLAN</strong> (50–100m: Wi-Fi) | <strong>LPWAN</strong> (15 km: LoRa) | <strong>Cellular</strong> (Global: 4G/5G).</p>
+        <table class="hw-table">
+          <thead><tr><th>WiFi Library</th><th>Board</th><th>Key Functions &amp; Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>ESP8266WiFi.h</code></td><td>NodeMCU</td><td>Connects to Wi-Fi: <code>WiFi.begin(ssid, pass)</code>, <code>WiFi.localIP()</code></td></tr>
+            <tr><td><code>WiFi.h</code></td><td>ESP32</td><td>Connects ESP32 to router or creates Hotspot (AP mode)</td></tr>
+            <tr><td><code>ESP8266WebServer.h</code></td><td>NodeMCU</td><td>Hosts webpage inside board: <code>server.on()</code>, <code>server.send()</code></td></tr>
+            <tr><td><code>PubSubClient.h</code></td><td>Both</td><td>Publishes &amp; subscribes <strong>MQTT</strong> sensor data</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Wireless Range Scale Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="58" viewBox="0 0 520 58">
+            <rect x="6" y="12" width="115" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="63" y="33" text-anchor="middle" font-size="11" fill="#111827">WPAN (BLE 10m)</text>
+            <text x="126" y="34" font-size="13" fill="#dc2626">&lt;</text>
+            <rect x="140" y="12" width="118" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="199" y="33" text-anchor="middle" font-size="11" fill="#111827">WLAN (WiFi 50m)</text>
+            <text x="263" y="34" font-size="13" fill="#dc2626">&lt;</text>
+            <rect x="278" y="12" width="120" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="338" y="33" text-anchor="middle" font-size="11" fill="#111827">LPWAN (LoRa 15km)</text>
+            <text x="403" y="34" font-size="13" fill="#dc2626">&lt;</text>
+            <rect x="418" y="12" width="96" height="34" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="466" y="33" text-anchor="middle" font-size="11" fill="#111827">5G (Global)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Zero wiring cost; ready WiFi libraries save 100s of lines of TCP/IP code.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Wall attenuation weakens signals; requires WPA2/TLS encryption against hackers.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Standard WiFi libraries make connecting embedded hardware to routers and cloud servers fast and effortless.</div>
+      </div>
+
+      <!-- PAGE 18 -->
+      <div class="page ruled-paper" data-idx="19">
+        <div class="nb-top"><span class="unit-pill">Unit 3.0: NodeMCU &amp; Block Diagram</span><span class="page-stamp">Page: 18</span></div>
+        <div class="q-black">Q. What is NodeMCU? Draw Its Block Diagram &amp; Explain Pin Functions. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>NodeMCU</strong> is an <span class="hl-y">open-source, low-cost Wi-Fi IoT board</span> based on the <strong>ESP8266 (ESP-12E) SoC</strong>, featuring USB-to-Serial programmer and programmable 3.3V GPIO pins.</div>
+        <div class="h-black">Key Specs &amp; Pin Functions:</div>
+        <ul>
+          <li><strong>CPU &amp; Memory:</strong> Tensilica L106 32-bit MCU (80–160 MHz) | ~80 KB RAM | 4 MB Flash | <strong>3.3V Logic</strong>.</li>
+          <li><strong>GPIO (<code>D0–D8</code>):</strong> Digital Input/Output + <strong>PWM</strong> (LED dimming / motor speed).</li>
+          <li><strong>Analog (<code>A0</code>):</strong> 10-bit ADC (<code>0–1023</code>) for analog sensors (LM35, LDR, Soil Moisture).</li>
+          <li><strong>Buses &amp; Power:</strong> <strong>I2C</strong> (<code>D1=SCL, D2=SDA</code>), <strong>SPI</strong> (<code>D5–D8</code>), <strong>UART</strong> (<code>TX/RX</code>), <code>VIN (5V)</code>, <code>3V3</code>, <code>RST</code>.</li>
+        </ul>
+        <div class="h-black">2D Block Diagram of NodeMCU (ESP8266):</div>
+        <div class="svg-wrap">
+          <svg width="530" height="90" viewBox="0 0 530 90">
+            <rect x="6" y="10" width="115" height="28" rx="5" fill="#fef9c3" stroke="#111827"/><text x="63" y="29" text-anchor="middle" font-size="11" fill="#111827">USB 5V + CP2102</text>
+            <rect x="6" y="48" width="115" height="28" rx="5" fill="#fce7f3" stroke="#be185d"/><text x="63" y="67" text-anchor="middle" font-size="11" fill="#111827">3.3V Regulator</text>
+            <line x1="121" y1="24" x2="155" y2="38" stroke="#dc2626" stroke-width="1.6"/><line x1="121" y1="62" x2="155" y2="52" stroke="#dc2626" stroke-width="1.6"/>
+            <rect x="155" y="12" width="195" height="64" rx="8" fill="#fef08a" stroke="#111827" stroke-width="2"/><text x="252" y="38" text-anchor="middle" font-size="12.5" font-weight="700" fill="#dc2626">ESP-12E (ESP8266)</text><text x="252" y="58" text-anchor="middle" font-size="11" fill="#111827">32-bit CPU + 2.4GHz Wi-Fi</text>
+            <line x1="350" y1="26" x2="385" y2="20" stroke="#1d4ed8" stroke-width="1.6"/><line x1="350" y1="45" x2="385" y2="45" stroke="#1d4ed8" stroke-width="1.6"/><line x1="350" y1="64" x2="385" y2="70" stroke="#1d4ed8" stroke-width="1.6"/>
+            <rect x="385" y="6" width="138" height="22" rx="4" fill="#dbeafe" stroke="#1d4ed8"/><text x="454" y="21" text-anchor="middle" font-size="10.5" fill="#111827">GPIO D0–D8 / PWM</text>
+            <rect x="385" y="33" width="138" height="22" rx="4" fill="#dcfce7" stroke="#15803d"/><text x="454" y="48" text-anchor="middle" font-size="10.5" fill="#111827">ADC A0 + I2C / SPI</text>
+            <rect x="385" y="60" width="138" height="22" rx="4" fill="#eff6ff" stroke="#1d4ed8"/><text x="454" y="75" text-anchor="middle" font-size="10.5" fill="#111827">PCB Wi-Fi Antenna</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Ultra-cheap (~₹300), built-in Wi-Fi + USB flash, Arduino IDE compatible.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Only 1 Analog pin (<code>A0</code>), strictly 3.3V logic, no built-in Bluetooth.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> NodeMCU combines an MCU, Wi-Fi radio, and USB programmer on one affordable board for smart IoT systems.</div>
+      </div>
+
+      <!-- PAGE 19 -->
+      <div class="page ruled-paper" data-idx="20">
+        <div class="nb-top"><span class="unit-pill">Unit 3.0: NodeMCU Sensor &amp; Webserver</span><span class="page-stamp">Page: 19</span></div>
+        <div class="q-black">Q. Interface a Sensor with NodeMCU &amp; Publish Data on a Webserver. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>NodeMCU Webserver Publishing</strong> runs an <span class="hl-y">HTTP web server</span> directly inside the NodeMCU so any phone/PC browser on Wi-Fi sees live sensor readings!</div>
+        <p class="ans-blue"><strong>Wiring (DHT11):</strong> <code>VCC → 3V3</code> | <code>GND → GND</code> | <code>DATA → D4 (GPIO2)</code>.</p>
+        <div class="code-box">#include &lt;ESP8266WiFi.h&gt;
+#include &lt;ESP8266WebServer.h&gt;
+#include &lt;DHT.h&gt;
+DHT dht(D4, DHT11); ESP8266WebServer server(80);
+void handleRoot() {
+  float t = dht.readTemperature();
+  server.send(200, "text/html", "&lt;h1&gt;CHAMGADAR IoT: " + String(t) + " C&lt;/h1&gt;");
+}
+void setup() {
+  dht.begin(); WiFi.begin("MyWiFi", "12345678");
+  while (WiFi.status() != WL_CONNECTED) delay(500);
+  server.on("/", handleRoot); server.begin();
+}
+void loop() { server.handleClient(); }</div>
+        <div class="h-black">2D Webserver Publishing Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="58" viewBox="0 0 520 58">
+            <rect x="8" y="12" width="115" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="65" y="33" text-anchor="middle" font-size="11" fill="#111827">DHT11 (Pin D4)</text>
+            <text x="129" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="148" y="12" width="155" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="225" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">NodeMCU Port 80</text>
+            <text x="309" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="328" y="12" width="184" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="420" y="33" text-anchor="middle" font-size="11" fill="#111827">Browser (192.168.1.5)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Zero cloud fees; instant live readings in any smartphone/laptop browser.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Accessible only on local Wi-Fi unless cloud/port-forwarding is configured.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Using <code>ESP8266WebServer.h</code> turns NodeMCU into an instant live sensor dashboard over local Wi-Fi.</div>
+      </div>
+
+      <!-- PAGE 20 -->
+      <div class="page ruled-paper" data-idx="21">
+        <div class="nb-top"><span class="unit-pill">Unit 3.0: Device Integration &amp; Interfacing</span><span class="page-stamp">Page: 20</span></div>
+        <div class="q-black">Q. Explain Device Integration with NodeMCU &amp; Interfacing Sensors with Boards. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Device Integration &amp; Sensor Interfacing</strong> is safely matching voltage levels, wiring pins (Digital, Analog, I2C), and isolating high-voltage AC loads via relays.</div>
+        <div class="h-black">1. Device Integration (Controlling 230V AC via Relay):</div>
+        <p class="ans-blue">NodeMCU GPIO outputs only <strong>3.3V (12 mA)</strong>. To control a 230V Fan/Bulb, connect <code>D1 → 5V Optocoupler Relay Module → 230V AC Appliance</code> for safe electrical isolation!</p>
+        <table class="hw-table">
+          <thead><tr><th>Interface</th><th>Board Pins</th><th>Examples &amp; Safety Rule</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Digital I/O</strong></td><td>GPIO (<code>D0–D8</code> / Pin 2–13)</td><td>PIR, IR, Relay, LED (<code>digitalRead/Write</code>)</td></tr>
+            <tr><td><strong>Analog Input</strong></td><td><code>A0</code> (NodeMCU) / <code>A0–A5</code> (Uno)</td><td>LM35, Gas MQ-2 (<strong>Use Voltage Divider for 5V→3.3V!</strong>)</td></tr>
+            <tr><td><strong>I2C Bus</strong></td><td><code>SDA</code> &amp; <code>SCL</code> (2 wires)</td><td>OLED, BMP280, MPU6050 (100+ devices on 2 wires)</td></tr>
+            <tr><td><strong>Raspberry Pi</strong></td><td>3.3V GPIO (No ADC!)</td><td>Needs external <strong>MCP3008 ADC chip</strong> for analog sensors</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D Integration Circuit Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="58" viewBox="0 0 520 58">
+            <rect x="6" y="12" width="120" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="66" y="33" text-anchor="middle" font-size="11" fill="#111827">Sensor (3.3V Safe)</text>
+            <text x="131" y="34" font-size="13" fill="#dc2626">→</text>
+            <rect x="148" y="12" width="110" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="203" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">NodeMCU [A0/D1]</text>
+            <text x="263" y="34" font-size="13" fill="#dc2626">→</text>
+            <rect x="280" y="12" width="105" height="34" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="332" y="33" text-anchor="middle" font-size="11" fill="#111827">Relay Module</text>
+            <text x="390" y="34" font-size="13" fill="#dc2626">→</text>
+            <rect x="407" y="12" width="106" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="460" y="33" text-anchor="middle" font-size="11" fill="#111827">230V AC Fan/Bulb</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Relays protect MCUs from 230V AC; I2C saves GPIO pins across multiple sensors.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Connecting 5V sensors directly to 3.3V NodeMCU/Pi pins permanently burns the board!</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Proper 3.3V voltage matching, I2C wiring, and relay isolation make sensor &amp; device integration safe and reliable.</div>
+      </div>
+
+      <!-- PAGE 21 -->
+      <div class="page ruled-paper" data-idx="22">
+        <div class="nb-top"><span class="unit-pill">Unit 4.0: Introduction to APIs in IoT</span><span class="page-stamp">Page: 21</span></div>
+        <div class="q-black">Q. What is an API? Explain the Role and Uses of APIs in IoT. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> An <strong>API (Application Programming Interface)</strong> is a <span class="hl-y">software bridge (messenger)</span> allowing two separate apps, IoT boards, or cloud servers to exchange data safely using fixed rules.</div>
+        <div class="h-black">Real-Life Analogy &amp; Uses in IoT:</div>
+        <ul>
+          <li><strong>Restaurant Waiter Analogy:</strong> You (Mobile App) cannot enter the Kitchen (Cloud Server). You order through the <strong>Waiter (API)</strong>, who brings back Sensor Data!</li>
+          <li><strong>1. Device-to-Cloud:</strong> NodeMCU/Pi calls Cloud API to upload temperature &amp; GPS logs.</li>
+          <li><strong>2. Cloud-to-App:</strong> Mobile app calls API to display live charts or send ON/OFF commands.</li>
+          <li><strong>3. Third-Party Data:</strong> Weather API tells Smart Farm pump: <em>"Rain today — stay OFF!"</em></li>
+        </ul>
+        <div class="h-black">2D API Bridge Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="62" viewBox="0 0 520 62">
+            <rect x="8" y="12" width="145" height="38" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="80" y="35" text-anchor="middle" font-size="11.5" fill="#111827">IoT Sensor / Mobile App</text>
+            <text x="160" y="36" font-size="14" fill="#dc2626">↔</text>
+            <rect x="178" y="10" width="145" height="42" rx="8" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="250" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">API (Waiter)</text><text x="250" y="46" text-anchor="middle" font-size="10" fill="#111827">Auth + Format Rules</text>
+            <text x="330" y="36" font-size="14" fill="#dc2626">↔</text>
+            <rect x="348" y="12" width="162" height="38" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="429" y="35" text-anchor="middle" font-size="11.5" fill="#111827">Cloud Server / Database</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Hides backend complexity, cross-platform (Android + Python + ESP32), secure via API keys.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> If API server crashes or changes endpoints, connected IoT apps fail.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> APIs act as the universal translator connecting physical IoT devices, cloud storage, and user interfaces.</div>
+      </div>
+
+      <!-- PAGE 22 -->
+      <div class="page ruled-paper" data-idx="23">
+        <div class="nb-top"><span class="unit-pill">Unit 4.0: MQTT API Components</span><span class="page-stamp">Page: 22</span></div>
+        <div class="q-black">Q. Explain MQTT API: Publisher, Broker, Subscriber &amp; Applications. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> The <strong>MQTT API</strong> is a <span class="hl-y">topic-based Publish-Subscribe messaging interface</span> where sensors and apps exchange lightweight packets through a central <strong>Broker</strong>.</div>
+        <ol>
+          <li><strong>Publisher:</strong> Sensor/board (NodeMCU) calling <code>publish("farm/moisture", "25%")</code> to send data.</li>
+          <li><strong>Broker (Server):</strong> Central post-office (<strong>Mosquitto, HiveMQ, AWS IoT</strong>) filtering topics &amp; QoS and forwarding messages.</li>
+          <li><strong>Subscriber:</strong> Phone app, DB, or actuator calling <code>subscribe("farm/moisture")</code> to get live updates!</li>
+        </ol>
+        <p class="ans-blue"><strong>Applications:</strong> Smart home light switches, Ola/Uber live cab GPS tracking, factory machine alerts &amp; Messenger chat.</p>
+        <div class="h-black">2D MQTT API Architecture Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="530" height="72" viewBox="0 0 530 72">
+            <rect x="6" y="16" width="135" height="38" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="73" y="39" text-anchor="middle" font-size="11.5" fill="#111827">Publisher (Sensor)</text>
+            <text x="147" y="40" font-size="14" fill="#dc2626">→</text>
+            <rect x="165" y="14" width="150" height="42" rx="8" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="240" y="33" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">MQTT BROKER</text><text x="240" y="49" text-anchor="middle" font-size="10" fill="#111827">Topic Router + QoS</text>
+            <line x1="315" y1="28" x2="368" y2="18" stroke="#15803d" stroke-width="1.6"/><line x1="315" y1="42" x2="368" y2="54" stroke="#15803d" stroke-width="1.6"/>
+            <rect x="368" y="4" width="155" height="26" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="445" y="21" text-anchor="middle" font-size="11" fill="#111827">Subscriber 1 (Mobile)</text>
+            <rect x="368" y="40" width="155" height="26" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="445" y="57" text-anchor="middle" font-size="11" fill="#111827">Subscriber 2 (Database)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Decouples sender &amp; receiver, 2-byte header saves battery &amp; weak 2G/Wi-Fi data.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Not meant for heavy video/files; needs a running Broker server.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Publisher-Broker-Subscriber architecture makes MQTT API ideal for scalable real-time IoT messaging.</div>
+      </div>
+
+      <!-- PAGE 23 -->
+      <div class="page ruled-paper" data-idx="24">
+        <div class="nb-top"><span class="unit-pill">Unit 4.0: REST API in IoT</span><span class="page-stamp">Page: 23</span></div>
+        <div class="q-black">Q. Explain REST API, HTTP Methods &amp; Its Applications in IoT. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>REST (Representational State Transfer) API</strong> is a <span class="hl-y">stateless web API</span> using standard <strong>HTTP/HTTPS methods</strong> (<code>GET, POST, PUT, DELETE</code>) and URLs to read or update IoT data.</div>
+        <table class="hw-table">
+          <thead><tr><th>HTTP Method</th><th>CRUD Action</th><th>Real IoT Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET</code></td><td>Read resource</td><td>Phone fetches room temp: <code>GET /api/room/temp</code></td></tr>
+            <tr><td><code>POST</code></td><td>Create / Upload</td><td>ESP32 uploads reading: <code>POST /api/sensors/data</code></td></tr>
+            <tr><td><code>PUT</code></td><td>Update data</td><td>Change smart AC target temperature to <code>24°C</code></td></tr>
+            <tr><td><code>DELETE</code></td><td>Remove data</td><td>Delete old offline sensor from dashboard</td></tr>
+          </tbody>
+        </table>
+        <p class="ans-blue"><strong>Applications:</strong> ThingSpeak IoT charts, Blynk HTTP API, OpenWeatherMap, and Google Home/Alexa cloud webhooks.</p>
+        <div class="h-black">2D REST Request-Response Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="58" viewBox="0 0 520 58">
+            <rect x="8" y="12" width="135" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="75" y="33" text-anchor="middle" font-size="11.5" fill="#111827">IoT Client / App</text>
+            <text x="148" y="34" font-size="12" fill="#dc2626">HTTP POST →</text>
+            <rect x="235" y="12" width="145" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="307" y="33" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">REST API Server</text>
+            <text x="385" y="34" font-size="12" fill="#15803d">→</text>
+            <rect x="405" y="12" width="108" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="459" y="33" text-anchor="middle" font-size="11" fill="#111827">200 OK (JSON)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Easy browser/Postman testing, stateless &amp; scalable, lightweight JSON payloads.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Continuous HTTP polling drains battery faster than MQTT push; heavier headers.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> REST API is the simplest, universal web interface for linking IoT sensors and dashboards over HTTP.</div>
+      </div>
+
+      <!-- PAGE 24 -->
+      <div class="page ruled-paper" data-idx="25">
+        <div class="nb-top"><span class="unit-pill">Unit 4.0: SOAP API &amp; REST vs SOAP</span><span class="page-stamp">Page: 24</span></div>
+        <div class="q-black">Q. Explain SOAP API &amp; Compare REST vs. SOAP in IoT. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>SOAP (Simple Object Access Protocol)</strong> is a <span class="hl-y">strict, XML-only messaging protocol</span> featuring built-in enterprise security (<strong>WS-Security</strong>). <em>Applications:</em> Banking gateways, hospital HL7 medical systems.</div>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>REST API</th><th>SOAP API</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Type &amp; Format</strong></td><td>Style; <strong>JSON</strong>, XML, Text</td><td>Strict Protocol; <span class="hl-p">Only XML</span></td></tr>
+            <tr><td><strong>Speed &amp; Size</strong></td><td><strong>Fast &amp; Lightweight</strong></td><td>Slower &amp; Heavy bandwidth</td></tr>
+            <tr><td><strong>Security</strong></td><td>HTTPS / OAuth / API Keys</td><td><strong>WS-Security</strong> + HTTPS</td></tr>
+            <tr><td><strong>Best For</strong></td><td><strong>IoT sensors, Mobile Apps</strong></td><td>Banking, Healthcare, Enterprise</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D SOAP XML Envelope Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="480" height="82" viewBox="0 0 480 82">
+            <rect x="30" y="4" width="420" height="74" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.8"/>
+            <text x="240" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#dc2626">SOAP ENVELOPE (XML)</text>
+            <rect x="55" y="25" width="370" height="20" rx="4" fill="#fef9c3" stroke="#111827"/><text x="240" y="39" text-anchor="middle" font-size="11" fill="#111827">HEADER (Auth / WS-Security Token)</text>
+            <rect x="55" y="50" width="370" height="22" rx="4" fill="#dbeafe" stroke="#1d4ed8"/><text x="240" y="65" text-anchor="middle" font-size="11" fill="#111827">BODY (Actual XML Request / Data)</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ SOAP Pros:</strong> Built-in error handling, ACID-friendly transactions, strict WS-Security.</div>
+          <div class="pc-box pc-con"><strong>❌ SOAP Cons:</strong> Heavy XML slows tiny IoT boards (NodeMCU/Uno) &amp; wastes battery/data.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Choose <strong>REST (JSON)</strong> for fast, battery-powered IoT devices and <strong>SOAP (XML)</strong> for strict banking/enterprise servers.</div>
+      </div>
+
+      <!-- PAGE 25 -->
+      <div class="page ruled-paper" data-idx="26">
+        <div class="nb-top"><span class="unit-pill">Unit 4.5: JSON in IoT APIs</span><span class="page-stamp">Page: 25</span></div>
+        <div class="q-black">Q. What is JSON? Explain Syntax, IoT Payload &amp; Compare JSON vs. XML. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>JSON (JavaScript Object Notation)</strong> is a <span class="hl-y">lightweight, human-readable text format</span> using <code>{"key": value}</code> pairs and <code>[arrays]</code> to transfer IoT data.</div>
+        <div class="code-box">{
+  "device_id": "NodeMCU-49",
+  "location": "Lab-1",
+  "temp_c": 34.5,
+  "fan_on": true,
+  "alerts": ["HighTemp", "NormalHumidity"]
+}</div>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>JSON</th><th>XML</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Syntax</strong></td><td><code>{"temp": 34}</code> (Short &amp; clean)</td><td><code>&lt;temp&gt;34&lt;/temp&gt;</code> (Verbose tags)</td></tr>
+            <tr><td><strong>Speed &amp; Size</strong></td><td><strong>Smaller &amp; Faster parsing</strong></td><td>Larger size &amp; slower parsing</td></tr>
+            <tr><td><strong>IoT Use</strong></td><td><strong>Default for REST, MQTT, MongoDB</strong></td><td>Legacy SOAP enterprise APIs</td></tr>
+          </tbody>
+        </table>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Easy for humans to read, tiny size saves IoT bandwidth, built into Python &amp; JS.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Does not allow comments (<code>//</code>) or raw binary images (needs Base64).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> JSON is the #1 data-exchange format powering modern IoT REST APIs, MQTT messages, and NoSQL storage.</div>
+      </div>
+
+      <!-- PAGE 26 -->
+      <div class="page ruled-paper" data-idx="27">
+        <div class="nb-top"><span class="unit-pill">Unit 4.6: Programming API Using Python</span><span class="page-stamp">Page: 26</span></div>
+        <div class="q-black">Q. Explain How to Program and Consume an IoT REST API Using Python. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Programming APIs in Python</strong> uses the <span class="hl-y"><code>requests</code> and <code>json</code> libraries</span> to upload (<code>POST</code>) sensor data or fetch (<code>GET</code>) live cloud data in a few clean lines.</div>
+        <div class="code-box">import requests
+
+# 1. POST: Upload IoT Sensor Data to Cloud API
+payload = {"device_id": "Pi-49", "temp_c": 34.8, "humidity": 60}
+res_post = requests.post("https://api.example-iot.com/data", json=payload)
+print("Upload Status:", res_post.status_code)   # 200 / 201 = Success
+
+# 2. GET: Fetch Live Weather API &amp; Parse JSON
+res_get = requests.get("https://api.open-meteo.com/v1/forecast?latitude=25.48&amp;longitude=85.71&amp;current_weather=true")
+data = res_get.json()                           # JSON -> Python Dict
+print("Barh Temp:", data["current_weather"]["temperature"], "C")</div>
+        <div class="h-black">2D Python-API Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="62" viewBox="0 0 520 62">
+            <rect x="8" y="12" width="155" height="38" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="85" y="35" text-anchor="middle" font-size="11.5" fill="#111827">Python Script (Pi)</text>
+            <text x="235" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">requests.post(JSON) →</text>
+            <text x="235" y="46" text-anchor="middle" font-size="11" font-weight="700" fill="#15803d">← .json() Response</text>
+            <rect x="315" y="12" width="195" height="38" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="412" y="35" text-anchor="middle" font-size="11.5" fill="#111827">Cloud IoT REST API</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Only 4–5 lines of code, auto-parses JSON via <code>.json()</code>, easy status checks.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Blocking <code>requests</code> calls pause code until server responds (set <code>timeout</code>).</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Python's <code>requests</code> library makes integrating Raspberry Pi and IoT gateways with cloud REST APIs effortless.</div>
+      </div>
+
+      <!-- PAGE 27 -->
+      <div class="page ruled-paper" data-idx="28">
+        <div class="nb-top"><span class="unit-pill">Unit 5.0: Industrial IoT (IIoT) &amp; IoE</span><span class="page-stamp">Page: 27</span></div>
+        <div class="q-black">Q. Explain Industrial IoT (IIoT) and Internet of Everything (IoE). (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>IIoT</strong> uses rugged sensors, robotics &amp; analytics inside factories (Industry 4.0). <strong>IoE (Internet of Everything)</strong> is Cisco's broader model connecting <span class="hl-y">People, Process, Data &amp; Things</span>!</div>
+        <p class="ans-blue"><strong>Real Example (Predictive Maintenance):</strong> Vibration &amp; heat sensors on Siemens/Bosch CNC machines predict motor wear <em>before</em> breakdown, saving crores!</p>
+        <table class="hw-table">
+          <thead><tr><th>Feature</th><th>Consumer IoT</th><th>Industrial IoT (IIoT)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Goal</strong></td><td>Personal comfort &amp; convenience</td><td><span class="hl-y">Factory safety, zero downtime &amp; profit</span></td></tr>
+            <tr><td><strong>Environment</strong></td><td>Homes, offices</td><td>Harsh factories (heat, dust, vibration)</td></tr>
+            <tr><td><strong>Failure Impact</strong></td><td>Minor inconvenience</td><td>Heavy financial loss / safety hazard</td></tr>
+          </tbody>
+        </table>
+        <div class="h-black">2D IoE 4-Pillars Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="480" height="86" viewBox="0 0 480 86">
+            <rect x="175" y="28" width="130" height="30" rx="7" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="240" y="48" text-anchor="middle" font-size="12.5" font-weight="700" fill="#dc2626">IoE ECOSYSTEM</text>
+            <rect x="20" y="6" width="115" height="24" rx="5" fill="#dbeafe" stroke="#1d4ed8"/><text x="77" y="22" text-anchor="middle" font-size="11.5" fill="#111827">1. People</text>
+            <rect x="20" y="56" width="115" height="24" rx="5" fill="#dcfce7" stroke="#15803d"/><text x="77" y="72" text-anchor="middle" font-size="11.5" fill="#111827">2. Process</text>
+            <rect x="345" y="6" width="115" height="24" rx="5" fill="#fce7f3" stroke="#be185d"/><text x="402" y="22" text-anchor="middle" font-size="11.5" fill="#111827">3. Data</text>
+            <rect x="345" y="56" width="115" height="24" rx="5" fill="#fef9c3" stroke="#ca8a04"/><text x="402" y="72" text-anchor="middle" font-size="11.5" fill="#111827">4. Things</text>
+            <line x1="135" y1="18" x2="175" y2="38" stroke="#dc2626" stroke-width="1.5"/><line x1="135" y1="68" x2="175" y2="48" stroke="#dc2626" stroke-width="1.5"/>
+            <line x1="345" y1="18" x2="305" y2="38" stroke="#dc2626" stroke-width="1.5"/><line x1="345" y1="68" x2="305" y2="48" stroke="#dc2626" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Cuts machine downtime 30–50%, boosts worker safety &amp; production speed.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> High initial setup cost; cyber-attacks can halt critical power/factory plants.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> IIoT drives Industry 4.0 smart factories, while IoE unites People, Process, Data, and Things.</div>
+      </div>
+
+      <!-- PAGE 28 -->
+      <div class="page ruled-paper" data-idx="29">
+        <div class="nb-top"><span class="unit-pill">Unit 5.0: Consumer Electronics IoT</span><span class="page-stamp">Page: 28</span></div>
+        <div class="q-black">Q. Explain IoT for Consumer Electronics Products with Real Examples. (4/6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Consumer IoT</strong> embeds Wi-Fi/BLE, voice AI &amp; mobile control into <span class="hl-y">everyday personal and home gadgets</span> for comfort and energy efficiency.</div>
+        <div class="h-black">5 Popular Consumer Electronics Products:</div>
+        <ol>
+          <li><strong>Smart Speakers:</strong> <strong>Amazon Echo (Alexa), Google Nest</strong> — voice control for lights, fans &amp; music.</li>
+          <li><strong>Smart TVs:</strong> Samsung/Sony Smart TVs, Fire TV Stick — OTT streaming &amp; phone mirroring.</li>
+          <li><strong>Smart Wearables:</strong> <strong>Apple Watch, Mi Band</strong> — tracks steps, sleep, calls &amp; heart rate.</li>
+          <li><strong>Smart Home Appliances:</strong> LG/Samsung Smart ACs (switch ON from college!), smart fridges &amp; washing machines.</li>
+          <li><strong>Smart Home Security:</strong> Wi-Fi video doorbells (Ring), smart locks &amp; iRobot vacuum cleaners.</li>
+        </ol>
+        <div class="h-black">2D Smart Home Consumer IoT Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="60" viewBox="0 0 520 60">
+            <rect x="8" y="12" width="145" height="36" rx="6" fill="#fef08a" stroke="#111827" stroke-width="1.8"/><text x="80" y="34" text-anchor="middle" font-size="11.5" font-weight="700" fill="#111827">Phone / Alexa Voice</text>
+            <text x="160" y="35" font-size="13" fill="#dc2626">↔ WiFi/BLE ↔</text>
+            <rect x="245" y="12" width="265" height="36" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="377" y="34" text-anchor="middle" font-size="11.5" fill="#111827">[Smart TV] + [Smart AC] + [Watch] + [Bulb]</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Hands-free voice convenience, saves 20–30% power via auto-schedules, remote control.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Privacy worries (always-listening mics/cameras), higher cost, e-waste risk.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Consumer IoT transforms ordinary household electronics into intelligent, energy-saving lifestyle devices.</div>
+      </div>
+
+      <!-- PAGE 29 -->
+      <div class="page ruled-paper" data-idx="30">
+        <div class="nb-top"><span class="unit-pill">Unit 5.0: IoT for Medical (IoMT)</span><span class="page-stamp">Page: 29</span></div>
+        <div class="q-black">Q. Explain IoT for Medical Applications (IoMT) with Examples &amp; Diagram. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>IoMT (Internet of Medical Things)</strong> connects <span class="hl-y">medical sensors, wearables &amp; hospital devices</span> to cloud platforms for 24×7 patient monitoring and instant emergency care.</div>
+        <div class="h-black">5 Major Medical Applications:</div>
+        <ol>
+          <li><strong>Remote Patient Monitoring:</strong> Elderly/heart patients wear wireless ECG &amp; SpO2 sensors at home; doctors watch live vitals.</li>
+          <li><strong>Emergency Fall &amp; AFib Alerts:</strong> <strong>Apple Watch</strong> detects irregular heartbeat or hard falls and auto-dials emergency!</li>
+          <li><strong>Smart Insulin &amp; Glucose Monitors:</strong> Tracks blood sugar continuously and auto-regulates insulin doses.</li>
+          <li><strong>Connected Ambulances:</strong> Sends live ECG/BP to the hospital ER <em>before</em> the patient arrives.</li>
+          <li><strong>Smart Pillboxes:</strong> Reminds patients via beep + family app alert if a medicine dose is missed.</li>
+        </ol>
+        <div class="h-black">2D IoMT Workflow Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="58" viewBox="0 0 520 58">
+            <rect x="8" y="12" width="145" height="34" rx="6" fill="#fce7f3" stroke="#be185d"/><text x="80" y="33" text-anchor="middle" font-size="11" fill="#111827">ECG / SpO2 Wearable</text>
+            <text x="159" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="178" y="12" width="140" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="248" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">Hospital Cloud</text>
+            <text x="324" y="34" font-size="14" fill="#dc2626">→</text>
+            <rect x="342" y="12" width="170" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="427" y="33" text-anchor="middle" font-size="11" fill="#111827">Doctor &amp; Ambulance Alert</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Saves lives with instant alerts, lowers hospital stay bills, enables rural telemedicine.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Hacking medical pumps/pacemakers is life-threatening; strict patient privacy needed.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> IoMT transforms healthcare from reactive clinic visits into continuous, proactive, life-saving care.</div>
+      </div>
+
+      <!-- PAGE 30 -->
+      <div class="page ruled-paper" data-idx="31">
+        <div class="nb-top"><span class="unit-pill">Unit 5.0: IoT for Agriculture</span><span class="page-stamp">Page: 30</span></div>
+        <div class="q-black">Q. Explain IoT for Agriculture (Smart Farming) with Examples &amp; Diagram. (6 Marks ★ Imp)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>Smart Farming (IoT in Agriculture)</strong> uses <span class="hl-y">soil, weather &amp; drone sensors</span> over LoRa/Wi-Fi to automate irrigation and maximize crop yield with zero water waste.</div>
+        <div class="h-black">5 Smart Farming Applications:</div>
+        <ol>
+          <li><strong>Automated Drip Irrigation:</strong> Soil moisture sensors switch pumps <strong>ON only when dry</strong> → saves <span class="hl-g">30–40% water</span>!</li>
+          <li><strong>Soil NPK &amp; Weather Sensing:</strong> Measures Nitrogen/Phosphorus/Potassium, pH, rain &amp; temp for exact fertilizer use.</li>
+          <li><strong>Agricultural Drones:</strong> Multispectral camera drones spot crop pests early and spray pesticides evenly.</li>
+          <li><strong>Smart Greenhouses:</strong> Auto-controls fans, shade &amp; misting inside polyhouses for off-season farming.</li>
+          <li><strong>Livestock GPS &amp; Health Tags:</strong> Smart cow collars track location and body fever to prevent disease spread.</li>
+        </ol>
+        <div class="h-black">2D Smart Farming Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="58" viewBox="0 0 520 58">
+            <rect x="8" y="12" width="145" height="34" rx="6" fill="#dcfce7" stroke="#15803d"/><text x="80" y="33" text-anchor="middle" font-size="11" fill="#111827">Soil &amp; Rain Sensors</text>
+            <text x="159" y="34" font-size="12" fill="#dc2626">LoRa →</text>
+            <rect x="208" y="12" width="135" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="275" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">Gateway &amp; Cloud</text>
+            <text x="348" y="34" font-size="13" fill="#dc2626">→</text>
+            <rect x="366" y="12" width="146" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="439" y="33" text-anchor="middle" font-size="11" fill="#111827">Auto Water Pump ON!</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Saves 30–40% water &amp; power, boosts harvest yield, avoids night-time manual pump checks.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> High sensor/drone setup cost for small farmers; weak rural internet/electricity.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Precision IoT farming boosts food production sustainably while conserving precious water and fertilizer.</div>
+      </div>
+
+      <!-- PAGE 31 -->
+      <div class="page ruled-paper" data-idx="32">
+        <div class="nb-top"><span class="unit-pill">Unit 5.0: Security &amp; Law Enforcement</span><span class="page-stamp">Page: 31</span></div>
+        <div class="q-black">Q. Explain Applications of IoT for Security and Law Enforcement. (6 Marks)</div>
+        <div class="def-red"><span class="imp">★ Definition:</span> <strong>IoT for Security &amp; Law Enforcement</strong> uses <span class="hl-y">AI smart cameras, acoustic/motion sensors &amp; GPS tracking</span> to prevent crimes, catch violators, and speed up police response.</div>
+        <div class="h-black">5 Applications in Security &amp; Policing:</div>
+        <ol>
+          <li><strong>Smart CCTV &amp; ANPR Cameras:</strong> Reads car number plates automatically to catch stolen vehicles &amp; issue traffic e-Challans.</li>
+          <li><strong>Gunshot &amp; Acoustic Sensors:</strong> Street pole sensors detect gunfire sounds and send exact GPS location to police in seconds.</li>
+          <li><strong>Police Body Cams &amp; GPS Patrols:</strong> Live-stream evidence to control rooms for officer safety and fast dispatch.</li>
+          <li><strong>Smart Border &amp; Home Intrusion:</strong> PIR motion, laser &amp; thermal sensors trigger instant security alarms.</li>
+          <li><strong>Smart Forensics &amp; Parole Tracking:</strong> GPS ankle tags monitor offenders and RFID secures crime-scene evidence.</li>
+        </ol>
+        <div class="h-black">2D Smart Policing Diagram:</div>
+        <div class="svg-wrap">
+          <svg width="520" height="58" viewBox="0 0 520 58">
+            <rect x="8" y="12" width="150" height="34" rx="6" fill="#fef2f2" stroke="#dc2626"/><text x="83" y="33" text-anchor="middle" font-size="11" fill="#111827">Smart CCTV / Gunshot</text>
+            <text x="163" y="34" font-size="12" fill="#dc2626">5G →</text>
+            <rect x="198" y="12" width="150" height="34" rx="6" fill="#fef08a" stroke="#111827"/><text x="273" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">Police Control AI</text>
+            <text x="353" y="34" font-size="13" fill="#dc2626">→</text>
+            <rect x="370" y="12" width="142" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8"/><text x="441" y="33" text-anchor="middle" font-size="11" fill="#111827">GPS Patrol Dispatch</text>
+          </svg>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-box pc-pro"><strong>✅ Advantages:</strong> Cuts emergency response time, automates e-Challan/stolen car alerts, tamper-proof evidence.</div>
+          <div class="pc-box pc-con"><strong>❌ Disadvantages:</strong> Citizen privacy/surveillance concerns; hacked cameras can be misused by attackers.</div>
+        </div>
+        <div class="conc-red"><strong>Conclusion:</strong> Combined with strong encryption and privacy laws, IoT makes cities safer and law enforcement smarter.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="font-size:12px;color:#cbd5e1;font-family:'Segoe UI',sans-serif;" id="statusText">
+    Viewing: Cover Page (Use ⬅️ ➡️ keys, buttons, or click 📄 Download PDF)
+  </div>
+
+  <script>
+    let current = 0;
+    const pages = Array.from(document.querySelectorAll('.page'));
+    const pills = Array.from(document.querySelectorAll('.pill'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const statusText = document.getElementById('statusText');
+
+    function showPage(nextIdx, dir) {
+      if (nextIdx < 0 || nextIdx >= pages.length) return;
+      pages.forEach(p => p.classList.remove('active', 'flip-next', 'flip-prev'));
+      pills.forEach(p => p.classList.remove('active'));
+      const target = pages[nextIdx];
+      target.classList.add('active');
+      if (dir > 0) target.classList.add('flip-next');
+      if (dir < 0) target.classList.add('flip-prev');
+      pills[nextIdx].classList.add('active');
+      current = nextIdx;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === pages.length - 1;
+      const label = current === 0 ? 'Cover Page' : current === 1 ? 'Index Page' : `Page ${current - 1}`;
+      statusText.textContent = `Viewing: ${label} (${current + 1} / ${pages.length})`;
+    }
+    function flipPage(step) { showPage(current + step, step); }
+    function goToPage(idx) { showPage(idx, idx >= current ? 1 : -1); }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') flipPage(1);
+      if (e.key === 'ArrowLeft') flipPage(-1);
+    });
+    document.querySelectorAll('.ruled-paper').forEach(pg => {
+      const top = pg.querySelector('.nb-top');
+      if (top) {
+        const hdr = document.createElement('div');
+        hdr.className = 'chamgadar-bar';
+        hdr.innerHTML = '🦇 CHAMGADAR <span>• Internet of Things (IoT) •</span>';
+        pg.insertBefore(hdr, top);
+      }
+    });
+    showPage(0, 0);
+  </script>
+</body>
+</html>
